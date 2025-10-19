@@ -1,7 +1,10 @@
 "use client";
 
+import { useChatActions } from "@/hooks/useChatActions";
 import { useChatStore } from "@/lib/store/chatStore";
 import { Apple, BookOpen, Calculator, Sparkles } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { v4 as uuidv4 } from "uuid";
 
 const suggestions = [
     { icon: Apple, title: "Meal Planning", description: "Create a balanced meal plan for the week" },
@@ -11,10 +14,28 @@ const suggestions = [
 ];
 
 export default function ChatArea({ chatId }: { chatId?: string }) {
-    const { chats } = useChatStore();
-    const messages = chatId ? chats[chatId] || [] : [];
+    const { chats, addMessage } = useChatStore();
+    const router = useRouter();
+    const pathname = usePathname();
+    const { sendMessage } = useChatActions();
 
-    if (!chatId || messages.length === 0) {
+    const currentChatId =
+        chatId || (pathname.startsWith("/c/") ? pathname.split("/c/")[1] : null);
+
+    const messages = currentChatId ? chats[currentChatId] || [] : [];
+
+    const handleSuggestionClick = async (text: string) => {
+        if (!currentChatId) {
+            const newId = uuidv4();
+            addMessage(newId, { role: "user", content: text });
+            router.replace(`/c/${newId}`);
+            setTimeout(() => sendMessage(newId, text), 100);
+        } else {
+            sendMessage(currentChatId, text);
+        }
+    };
+
+    if (!currentChatId || messages.length === 0) {
         return (
             <div className="flex-1 overflow-y-auto bg-[var(--color-background)]">
                 <div className="max-w-3xl mx-auto px-4 py-12 flex flex-col items-center justify-center min-h-full">
@@ -35,22 +56,22 @@ export default function ChatArea({ chatId }: { chatId?: string }) {
                     </p>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-2xl">
-                        {suggestions.map((suggestion, i) => (
+                        {suggestions.map((s, i) => (
                             <button
                                 key={i}
                                 className="group p-4 rounded-2xl border border-[var(--color-border)] bg-[var(--color-card)] hover:bg-[var(--color-secondary)] transition-all duration-200 text-left"
-                                onClick={() => console.log("Clicked:", suggestion.title)}
+                                onClick={() => handleSuggestionClick(s.title)}
                             >
                                 <div className="flex items-start gap-3">
                                     <div className="p-2 rounded-lg bg-[var(--color-primary)] bg-opacity-10 group-hover:bg-opacity-15 transition-all">
-                                        <suggestion.icon size={20} className="text-[var(--color-foreground)]" />
+                                        <s.icon size={20} className="text-[var(--color-foreground)]" />
                                     </div>
                                     <div className="flex-1 min-w-0">
                                         <h3 className="font-semibold text-[var(--color-foreground)] mb-1">
-                                            {suggestion.title}
+                                            {s.title}
                                         </h3>
                                         <p className="text-sm text-[var(--color-foreground)] opacity-60 line-clamp-2">
-                                            {suggestion.description}
+                                            {s.description}
                                         </p>
                                     </div>
                                 </div>
@@ -69,8 +90,8 @@ export default function ChatArea({ chatId }: { chatId?: string }) {
                     <div
                         key={i}
                         className={`message-enter p-3 rounded-xl max-w-[80%] ${m.role === "user"
-                            ? "self-end bg-[var(--color-primary)] text-white"
-                            : "self-start bg-[var(--color-card)] text-[var(--color-foreground)]"
+                                ? "self-end bg-[var(--color-primary)] text-white"
+                                : "self-start bg-[var(--color-card)] text-[var(--color-foreground)]"
                             }`}
                     >
                         {m.content}

@@ -1,5 +1,6 @@
 "use client";
 
+import { useChatActions } from "@/hooks/useChatActions";
 import { useChatStore } from "@/lib/store/chatStore";
 import { Paperclip, Send } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
@@ -12,19 +13,17 @@ export default function ChatInput({ chatId: propChatId }: { chatId?: string }) {
     const router = useRouter();
     const pathname = usePathname();
     const { addMessage } = useChatStore();
+    const { sendMessage } = useChatActions();
 
-    // detect chat ID either from props or from path
     const chatId =
         propChatId || (pathname.startsWith("/c/") ? pathname.split("/c/")[1] : null);
 
     const adjustHeight = useCallback(() => {
         const textarea = textareaRef.current;
         if (!textarea) return;
-
         textarea.style.height = "auto";
         const maxHeight = 200;
         const newHeight = Math.min(textarea.scrollHeight, maxHeight);
-
         textarea.style.height = `${newHeight}px`;
         textarea.style.overflowY =
             textarea.scrollHeight > maxHeight ? "auto" : "hidden";
@@ -36,38 +35,28 @@ export default function ChatInput({ chatId: propChatId }: { chatId?: string }) {
 
     const handleSend = useCallback(async () => {
         if (!message.trim()) return;
-
         const text = message.trim();
         setMessage("");
 
-        // create a new chat and replace path if none exists
+        // 🟢 If no chat yet
         if (!chatId) {
             const newId = uuidv4();
-            addMessage(newId, { role: "user", content: text });
+
+            // just navigate first — no addMessage yet
             router.replace(`/c/${newId}`);
-            console.log("Created new chat:", newId, "→", text);
+
+            // wait for the route to mount, then send the message once
+            setTimeout(() => {
+                sendMessage(newId, text);
+            }, 150);
+
             return;
         }
 
-        // add message to existing chat
-        addMessage(chatId, { role: "user", content: text });
-        console.log("Send:", { chatId, text });
+        // 🟢 Existing chat
+        sendMessage(chatId, text);
+    }, [message, chatId, router, sendMessage]);
 
-        try {
-            const res = await fetch("/api/chat", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ message: text }),
-            });
-
-            const data = await res.json();
-            if (data.reply) {
-                addMessage(chatId, { role: "assistant", content: data.reply });
-            }
-        } catch (err) {
-            console.error("Chat send error:", err);
-        }
-    }, [message, chatId, router, addMessage]);
 
     const handleKeyDown = useCallback(
         (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -83,7 +72,6 @@ export default function ChatInput({ chatId: propChatId }: { chatId?: string }) {
         <div className="bg-[var(--color-background)] px-4 py-4">
             <div className="max-w-3xl mx-auto">
                 <div className="relative flex items-center gap-2 bg-[var(--color-input-bg)] border border-[var(--color-border)] rounded-3xl shadow-sm px-4 py-2.5 focus-within:border-[var(--color-primary)] focus-within:shadow-md transition-all">
-                    {/* Attachment Button */}
                     <button
                         className="p-2 rounded-lg hover:bg-[var(--color-secondary)] text-[var(--color-foreground)] transition-colors flex-shrink-0"
                         aria-label="Attach file"
@@ -92,7 +80,6 @@ export default function ChatInput({ chatId: propChatId }: { chatId?: string }) {
                         <Paperclip size={20} />
                     </button>
 
-                    {/* Textarea */}
                     <textarea
                         ref={textareaRef}
                         className="flex-1 resize-none bg-transparent outline-none text-[15px] leading-[1.5] placeholder:text-[var(--color-foreground)] placeholder:opacity-40 text-[var(--color-foreground)] max-h-[200px] py-[6px]"
@@ -103,7 +90,6 @@ export default function ChatInput({ chatId: propChatId }: { chatId?: string }) {
                         rows={1}
                     />
 
-                    {/* Send Button */}
                     <button
                         className="flex-shrink-0 p-2.5 rounded-lg bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-hover)] transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-[var(--color-primary)]"
                         onClick={handleSend}
@@ -114,7 +100,6 @@ export default function ChatInput({ chatId: propChatId }: { chatId?: string }) {
                     </button>
                 </div>
 
-                {/* Footer Text */}
                 <p className="mt-3 text-xs text-center text-[var(--color-foreground)] opacity-50">
                     NutriAI can make mistakes. Consider checking important information.
                 </p>
