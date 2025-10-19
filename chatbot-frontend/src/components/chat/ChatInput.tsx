@@ -1,18 +1,21 @@
 "use client";
 
+import { useChatStore } from "@/lib/store/chatStore";
 import { Paperclip, Send } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 
-export default function ChatInput() {
+export default function ChatInput({ chatId: propChatId }: { chatId?: string }) {
     const [message, setMessage] = useState("");
     const textareaRef = useRef<HTMLTextAreaElement | null>(null);
     const router = useRouter();
     const pathname = usePathname();
+    const { addMessage } = useChatStore();
 
-    // detect if we’re inside an existing chat
-    const chatId = pathname.startsWith("/c/") ? pathname.split("/c/")[1] : null;
+    // detect chat ID either from props or from path
+    const chatId =
+        propChatId || (pathname.startsWith("/c/") ? pathname.split("/c/")[1] : null);
 
     const adjustHeight = useCallback(() => {
         const textarea = textareaRef.current;
@@ -37,18 +40,34 @@ export default function ChatInput() {
         const text = message.trim();
         setMessage("");
 
-        // if we’re not in a chat, create a new one and replace path
+        // create a new chat and replace path if none exists
         if (!chatId) {
             const newId = uuidv4();
+            addMessage(newId, { role: "user", content: text });
             router.replace(`/c/${newId}`);
-            console.log("Created new chat:", newId, "with first message:", text);
+            console.log("Created new chat:", newId, "→", text);
             return;
         }
 
-        // normal message send
+        // add message to existing chat
+        addMessage(chatId, { role: "user", content: text });
         console.log("Send:", { chatId, text });
-        // TODO: hook this up to chat store or API
-    }, [message, chatId, router]);
+
+        try {
+            const res = await fetch("/api/chat", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message: text }),
+            });
+
+            const data = await res.json();
+            if (data.reply) {
+                addMessage(chatId, { role: "assistant", content: data.reply });
+            }
+        } catch (err) {
+            console.error("Chat send error:", err);
+        }
+    }, [message, chatId, router, addMessage]);
 
     const handleKeyDown = useCallback(
         (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
