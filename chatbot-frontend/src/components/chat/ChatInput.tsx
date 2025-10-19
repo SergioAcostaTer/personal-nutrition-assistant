@@ -40,9 +40,9 @@ export default function ChatInput() {
     );
 
     return (
-        <div className="border-t border-[var(--color-border)] bg-[var(--color-background)] px-4 py-4">
+        <div className="bg-[var(--color-background)] px-4 py-4 border-t border-[var(--color-border)]">
             <div className="max-w-3xl mx-auto">
-                <div className="relative flex items-end gap-2 bg-[var(--color-input-bg)] border border-[var(--color-border)] rounded-3xl shadow-sm px-4 py-3 focus-within:border-[var(--color-primary)] focus-within:shadow-md transition-all">
+                <div className="relative flex items-center gap-2 bg-[var(--color-input-bg)] border border-[var(--color-border)] rounded-3xl shadow-sm px-4 py-2.5 focus-within:border-[var(--color-primary)] focus-within:shadow-md transition-all">
                     {/* Attachment Button */}
                     <button
                         className="p-2 rounded-lg hover:bg-[var(--color-secondary)] text-[var(--color-foreground)] transition-colors flex-shrink-0"
@@ -55,7 +55,7 @@ export default function ChatInput() {
                     {/* Textarea */}
                     <textarea
                         ref={textareaRef}
-                        className="flex-1 resize-none bg-transparent outline-none text-[15px] leading-6 placeholder:text-[var(--color-foreground)] placeholder:opacity-40 text-[var(--color-foreground)] max-h-[200px]"
+                        className="flex-1 resize-none bg-transparent outline-none text-[15px] leading-[1.5] placeholder:text-[var(--color-foreground)] placeholder:opacity-40 text-[var(--color-foreground)] max-h-[200px] py-[6px]"
                         value={message}
                         placeholder="Message NutriAI..."
                         onChange={(e) => setMessage(e.target.value)}
@@ -65,7 +65,7 @@ export default function ChatInput() {
 
                     {/* Send Button */}
                     <button
-                        className="flex-shrink-0 p-2 rounded-lg bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-hover)] transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-[var(--color-primary)]"
+                        className="flex-shrink-0 p-2.5 rounded-lg bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-hover)] transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-[var(--color-primary)]"
                         onClick={handleSend}
                         disabled={!message.trim()}
                         aria-label="Send message"

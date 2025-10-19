@@ -17,7 +17,6 @@ export default function Sidebar() {
         setDesktop,
     } = useSidebarStore();
 
-    // Track window size and switch between desktop/mobile mode
     useEffect(() => {
         const handleResize = () => {
             const desktop = window.innerWidth >= 768;
@@ -29,7 +28,6 @@ export default function Sidebar() {
         return () => window.removeEventListener("resize", handleResize);
     }, [setDesktop, setMobileOpen]);
 
-    // Sidebar width (desktop only)
     const sidebarWidth = isDesktop
         ? isCollapsed
             ? "w-16"
@@ -38,7 +36,6 @@ export default function Sidebar() {
 
     return (
         <>
-            {/* Mobile Overlay */}
             {!isDesktop && (
                 <div
                     className={`fixed inset-0 z-40 bg-black/40 backdrop-blur-sm transition-opacity duration-300 ${isMobileOpen
@@ -49,7 +46,6 @@ export default function Sidebar() {
                 />
             )}
 
-            {/* Sidebar Container */}
             <aside
                 className={[
                     "h-screen flex flex-col border-r border-[var(--color-border)] bg-[var(--color-sidebar-bg)] z-50",
@@ -61,10 +57,9 @@ export default function Sidebar() {
                             ? "translate-x-0"
                             : "-translate-x-full",
                     sidebarWidth,
-                    "overflow-hidden shadow-lg md:shadow-none",
+                    "overflow-hidden shadow-[0_2px_8px_rgba(0,0,0,0.04)] dark:shadow-[0_2px_8px_rgba(0,0,0,0.25)]",
                 ].join(" ")}
             >
-                {/* Header */}
                 <SidebarHeader
                     isCollapsed={isCollapsed}
                     setIsCollapsed={setCollapsed}
@@ -72,7 +67,6 @@ export default function Sidebar() {
                     setIsMobileOpen={setMobileOpen}
                 />
 
-                {/* Content */}
                 <div className="flex-1 overflow-y-auto px-2 py-3 flex flex-col gap-3">
                     <SidebarButton
                         icon={<Plus size={18} />}
@@ -91,13 +85,11 @@ export default function Sidebar() {
                         shortcut={["Ctrl", "Shift", "F"]}
                     />
 
-                    {/* Chat history (hidden when collapsed) */}
                     {!isCollapsed && (
                         <div className="mt-4 space-y-1">
                             <p className="px-3 text-xs font-semibold text-[var(--color-foreground)] opacity-50">
                                 Recent chats
                             </p>
-
                             {[
                                 "Meal prep ideas",
                                 "High protein recipes",
@@ -106,7 +98,7 @@ export default function Sidebar() {
                             ].map((title, i) => (
                                 <button
                                     key={i}
-                                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-[var(--color-card)] text-sm text-[var(--color-foreground)] truncate transition-colors"
+                                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-[var(--color-secondary)] text-sm text-[var(--color-foreground)] truncate transition-colors"
                                     onClick={() => console.log("Open chat:", title)}
                                 >
                                     <span className="truncate">{title}</span>
@@ -116,7 +108,6 @@ export default function Sidebar() {
                     )}
                 </div>
 
-                {/* Footer */}
                 <SidebarFooter isCollapsed={isCollapsed} setIsCollapsed={setCollapsed} />
             </aside>
         </>
