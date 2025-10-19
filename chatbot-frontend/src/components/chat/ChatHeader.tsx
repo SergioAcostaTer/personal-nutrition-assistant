@@ -26,7 +26,7 @@ export default function ChatHeader() {
                 <span className="font-semibold text-[var(--color-foreground)] text-sm">
                     NutriAI
                 </span>
-                <span className="px-2 py-0.5 text-xs font-medium bg-[var(--color-primary)] bg-opacity-10 text-[var(--color-primary)] rounded-full">
+                <span className="px-2 py-0.5 text-xs font-medium bg-[var(--color-primary)] bg-opacity-10 text-[var(--color-foreground)] rounded-full">
                     GPT-4
                 </span>
             </div>

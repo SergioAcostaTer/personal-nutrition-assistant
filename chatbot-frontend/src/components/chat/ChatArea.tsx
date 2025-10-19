@@ -56,7 +56,7 @@ export default function ChatArea() {
                                 <div className="p-2 rounded-lg bg-[var(--color-primary)] bg-opacity-10 group-hover:bg-opacity-15 transition-all">
                                     <suggestion.icon
                                         size={20}
-                                        className="text-[var(--color-primary)]"
+                                        className="text-[var(--color-foreground)]"
                                         strokeWidth={2}
                                     />
                                 </div>
