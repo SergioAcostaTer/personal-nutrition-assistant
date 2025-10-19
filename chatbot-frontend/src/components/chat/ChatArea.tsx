@@ -38,7 +38,7 @@ export default function ChatArea() {
                     </div>
                 </div>
 
-                <h1 className="text-4xl font-semibold mb-3 text-[var(--color-foreground)] text-center">
+                <h1 className="text-3xl font-semibold mb-3 text-[var(--color-foreground)] text-center">
                     How can I help you today?
                 </h1>
                 <p className="text-[var(--color-foreground)] opacity-60 mb-12 text-center text-lg">

@@ -23,7 +23,7 @@ export default function ChatHeader() {
 
             {/* Center: Model Info */}
             <div className="flex-1 flex items-center justify-center gap-2">
-                <span className="font-semibold text-[var(--color-foreground)] text-sm">
+                <span className="font-semibold text-[var(--color-foreground)] text-xl">
                     NutriAI
                 </span>
                 <span className="px-2 py-0.5 text-xs font-medium bg-[var(--color-primary)] bg-opacity-10 text-[var(--color-foreground)] rounded-full">
