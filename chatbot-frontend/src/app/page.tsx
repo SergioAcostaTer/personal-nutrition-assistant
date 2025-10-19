@@ -4,9 +4,9 @@ import Sidebar from "@/components/sidebar/Sidebar";
 
 export default function Home() {
     return (
-        <div className="flex h-screen overflow-hidden bg-gray-100 text-gray-800 h-[100svh]">
+        <div className="flex h-[100svh] overflow-hidden bg-gray-100 text-gray-800">
             <Sidebar />
-            <main className="flex-1 flex flex-col md:ml-0">
+            <main className="flex flex-1 flex-col">
                 <ChatArea />
                 <ChatInput />
             </main>
