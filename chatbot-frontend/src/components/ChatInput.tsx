@@ -15,11 +15,10 @@ export default function ChatInput() {
             <div className="mb-2 w-full max-w-2xl flex flex-row p-2 rounded-xl border border-gray-300 bg-white">
                 <textarea
                     className="w-full p-2 rounded-md resize-none"
-                    rows={3}
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
                 />
-                <div>
+                <div className="flex h-full flex-col ml-2">
                     <button
                         className="mt-2 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
                         onClick={handleSend}
