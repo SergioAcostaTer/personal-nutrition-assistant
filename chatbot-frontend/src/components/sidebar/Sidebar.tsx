@@ -39,8 +39,8 @@ export default function Sidebar() {
             {!isDesktop && (
                 <div
                     className={`fixed inset-0 z-40 bg-black/40 backdrop-blur-sm transition-opacity duration-300 ${isMobileOpen
-                            ? "opacity-100 pointer-events-auto"
-                            : "opacity-0 pointer-events-none"
+                        ? "opacity-100 pointer-events-auto"
+                        : "opacity-0 pointer-events-none"
                         }`}
                     onClick={() => setMobileOpen(false)}
                 />
@@ -58,6 +58,7 @@ export default function Sidebar() {
                             : "-translate-x-full",
                     sidebarWidth,
                     "overflow-hidden shadow-[0_2px_8px_rgba(0,0,0,0.04)] dark:shadow-[0_2px_8px_rgba(0,0,0,0.25)]",
+                    "h-[100svh]",
                 ].join(" ")}
             >
                 <SidebarHeader
