@@ -40,7 +40,7 @@ export default function ChatInput() {
     );
 
     return (
-        <div className="bg-[var(--color-background)] px-4 py-4 border-t border-[var(--color-border)]">
+        <div className="bg-[var(--color-background)] px-4 py-4">
             <div className="max-w-3xl mx-auto">
                 <div className="relative flex items-center gap-2 bg-[var(--color-input-bg)] border border-[var(--color-border)] rounded-3xl shadow-sm px-4 py-2.5 focus-within:border-[var(--color-primary)] focus-within:shadow-md transition-all">
                     {/* Attachment Button */}

@@ -85,28 +85,6 @@ export default function Sidebar() {
                         collapsed={isCollapsed}
                         shortcut={["Ctrl", "Shift", "F"]}
                     />
-
-                    {!isCollapsed && (
-                        <div className="mt-4 space-y-1">
-                            <p className="px-3 text-xs font-semibold text-[var(--color-foreground)] opacity-50">
-                                Recent chats
-                            </p>
-                            {[
-                                "Meal prep ideas",
-                                "High protein recipes",
-                                "Macro calculator",
-                                "Vitamin D guide",
-                            ].map((title, i) => (
-                                <button
-                                    key={i}
-                                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-[var(--color-secondary)] text-sm text-[var(--color-foreground)] truncate transition-colors"
-                                    onClick={() => console.log("Open chat:", title)}
-                                >
-                                    <span className="truncate">{title}</span>
-                                </button>
-                            ))}
-                        </div>
-                    )}
                 </div>
 
                 <SidebarFooter isCollapsed={isCollapsed} setIsCollapsed={setCollapsed} />
