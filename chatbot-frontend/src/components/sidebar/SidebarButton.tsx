@@ -22,14 +22,12 @@ export const SidebarButton = ({
         <button
             onClick={onClick}
             title={label + (shortcut ? ` (${shortcut.join(" + ")})` : "")}
-            className={`group relative w-full flex items-center px-3 py-2 rounded-lg hover:bg-[#2a2b32] transition-colors cursor-pointer`}
+            className="group relative w-full flex items-center px-3 py-2 rounded-lg hover:bg-[var(--color-border)] transition-colors cursor-pointer"
         >
-            {/* Icon */}
             <div className="flex items-center justify-center w-6 h-6 shrink-0">
                 {icon}
             </div>
 
-            {/* Label */}
             <div
                 className={`overflow-hidden transition-all duration-300 ease-in-out`}
                 style={{
@@ -38,17 +36,14 @@ export const SidebarButton = ({
                     marginLeft: collapsed ? 0 : 12,
                 }}
             >
-                <span className="text-sm text-gray-100 whitespace-nowrap">
+                <span className="text-sm text-[var(--color-foreground)] whitespace-nowrap">
                     {label}
                 </span>
             </div>
 
-            {/* Shortcut shown on hover */}
-            {(shortcut && shortcut.length > 0 && !collapsed) && (
+            {shortcut && shortcut.length > 0 && !collapsed && (
                 <div
-                    className={`
-                        absolute right-3 top-1/2 transform -translate-y-1/2 text-sm text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap
-                    `}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-sm text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap"
                 >
                     {shortcut.join(" + ")}
                 </div>

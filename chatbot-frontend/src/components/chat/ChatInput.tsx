@@ -40,24 +40,21 @@ export default function ChatInput() {
     );
 
     return (
-        <div className="w-full border-t border-gray-200 bg-gray-50 px-4 py-3 flex flex-col items-center">
-            <div className="relative w-full max-w-3xl flex items-center bg-white border border-gray-300 rounded-2xl shadow-sm p-2">
+        <div className="w-full border-t border-[var(--color-border)] bg-[var(--color-card)] px-4 py-3 flex flex-col items-center">
+            <div className="relative w-full max-w-3xl flex items-center bg-[var(--color-background)] border border-[var(--color-border)] rounded-2xl shadow-sm p-2">
                 <textarea
                     ref={textareaRef}
                     id="chat-input"
-                    className="flex-1 resize-none bg-transparent outline-none text-sm leading-normal placeholder:text-gray-400 text-gray-800"
+                    className="flex-1 resize-none bg-transparent outline-none text-sm leading-normal placeholder:text-gray-400 text-[var(--color-foreground)]"
                     value={message}
                     placeholder="Send a message..."
                     onChange={(e) => setMessage(e.target.value)}
                     onKeyDown={handleKeyDown}
                     rows={1}
-                    style={{
-                        minHeight: "1.5rem",
-                        paddingTop: "0.25rem",
-                    }}
+                    style={{ minHeight: "1.5rem", paddingTop: "0.25rem" }}
                 />
                 <button
-                    className="ml-2 flex-shrink-0 w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-full bg-blue-600 text-white hover:bg-blue-700 transition disabled:opacity-40 disabled:cursor-not-allowed"
+                    className="ml-2 flex-shrink-0 w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-full bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-hover)] transition disabled:opacity-40 disabled:cursor-not-allowed"
                     onClick={handleSend}
                     disabled={!message.trim()}
                     aria-label="Send message"

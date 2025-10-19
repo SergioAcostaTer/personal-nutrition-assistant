@@ -17,19 +17,17 @@ export default function Sidebar() {
         setDesktop,
     } = useSidebarStore();
 
-    // 🧭 Detect viewport size
     useEffect(() => {
         const handleResize = () => {
             const desktop = window.innerWidth >= 768;
             setDesktop(desktop);
-            if (desktop) setMobileOpen(false); // auto-close overlay on desktop
+            if (desktop) setMobileOpen(false);
         };
         handleResize();
         window.addEventListener("resize", handleResize);
         return () => window.removeEventListener("resize", handleResize);
     }, [setDesktop, setMobileOpen]);
 
-    // 📏 Width logic
     const sidebarWidth = isDesktop
         ? isCollapsed
             ? "md:w-[68px]"
@@ -38,7 +36,6 @@ export default function Sidebar() {
 
     return (
         <>
-            {/* 📱 Backdrop for mobile */}
             {!isDesktop && isMobileOpen && (
                 <div
                     className="fixed inset-0 bg-black/50 z-40"
@@ -46,15 +43,14 @@ export default function Sidebar() {
                 />
             )}
 
-            {/* 🧱 Sidebar */}
             <aside
                 className={`
-                    h-screen bg-[#202123] text-gray-100 flex flex-col transition-all duration-300 ease-in-out
-                    border-r border-[#3e3f4b] z-50
-                    ${isDesktop ? "static" : "fixed top-0 left-0"}
-                    ${isMobileOpen || isDesktop ? "translate-x-0" : "-translate-x-full"}
-                    ${sidebarWidth}
-                `}
+          h-screen flex flex-col transition-all duration-300 ease-in-out
+          border-r border-[var(--color-border)] bg-[var(--color-card)] text-[var(--color-foreground)] z-50
+          ${isDesktop ? "static" : "fixed top-0 left-0"}
+          ${isMobileOpen || isDesktop ? "translate-x-0" : "-translate-x-full"}
+          ${sidebarWidth}
+        `}
             >
                 <SidebarHeader
                     isCollapsed={isCollapsed}
@@ -65,14 +61,14 @@ export default function Sidebar() {
 
                 <nav className="flex-1 px-2 overflow-y-auto space-y-2">
                     <SidebarButton
-                        icon={<Plus size={18} className="text-gray-100" />}
+                        icon={<Plus size={18} className="text-[var(--color-foreground)]" />}
                         label="New Chat"
                         onClick={() => console.log("New Chat")}
                         collapsed={isDesktop && isCollapsed}
                     />
 
                     <SidebarButton
-                        icon={<Search size={16} className="text-gray-100" />}
+                        icon={<Search size={16} className="text-[var(--color-foreground)]" />}
                         label="Search"
                         onClick={() => console.log("Search")}
                         collapsed={isDesktop && isCollapsed}
