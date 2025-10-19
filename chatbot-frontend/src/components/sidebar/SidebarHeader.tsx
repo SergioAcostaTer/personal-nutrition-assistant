@@ -15,11 +15,15 @@ export const SidebarHeader = ({
     isMobileOpen,
     setIsMobileOpen,
 }: SidebarHeaderProps) => {
+    const handleToggleCollapse = () => {
+        if (isMobileOpen && setIsMobileOpen) return;
+        setIsCollapsed(!isCollapsed);
+    };
     return (
         <div className="flex h-14 items-center border-b border-[var(--color-border)] px-2">
             {/* Collapse / Expand toggle (logo area) */}
             <button
-                onClick={() => setIsCollapsed(!isCollapsed)}
+                onClick={handleToggleCollapse}
                 aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
                 className="relative flex items-center gap-2 px-2 py-2 rounded-lg hover:bg-[var(--color-card)] transition-all duration ease-in-out flex-1 md:flex-none"
             >
