@@ -1,6 +1,5 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
 import { Apple, PanelLeftClose, X } from "lucide-react";
 
 type SidebarHeaderProps = {
@@ -18,67 +17,50 @@ export const SidebarHeader = ({
 }: SidebarHeaderProps) => {
     return (
         <div className="flex h-14 items-center border-b border-[var(--color-border)] px-2">
-            {/* Collapse / Expand Button (Logo area) */}
+            {/* Collapse / Expand toggle (logo area) */}
             <button
-                className={[
-                    "flex items-center rounded-lg px-2 py-2 hover:bg-[var(--color-card)] transition-colors duration-200",
-                    "w-full md:w-auto justify-start gap-2",
-                ].join(" ")}
                 onClick={() => setIsCollapsed(!isCollapsed)}
                 aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+                className="relative flex items-center gap-2 px-2 py-2 rounded-lg hover:bg-[var(--color-card)] transition-all duration ease-in-out flex-1 md:flex-none"
             >
-                {/* Logo Icon */}
-                <motion.div
-                    layout
-                    transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                    className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-accent)] flex-shrink-0"
-                >
+                {/* Logo icon (never moves) */}
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-accent)] flex-shrink-0 transition-transform duration">
                     <Apple size={20} className="text-white" strokeWidth={2.5} />
-                </motion.div>
+                </div>
 
-                {/* Animated Title (only visible when expanded) */}
-                <AnimatePresence initial={false}>
-                    {!isCollapsed && (
-                        <motion.span
-                            key="title"
-                            initial={{ opacity: 0, x: -10 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            exit={{ opacity: 0, x: -10 }}
-                            transition={{ duration: 0.25 }}
-                            className="font-semibold text-[var(--color-foreground)] whitespace-nowrap overflow-hidden"
-                        >
-                            NutriAI
-                        </motion.span>
-                    )}
-                </AnimatePresence>
+                {/* Label (absolute — fades/slides smoothly) */}
+                <div
+                    className={[
+                        "absolute left-12 right-3 flex items-center justify-between transition-all ease-in-out duration",
+                        isCollapsed
+                            ? "opacity-0 translate-x-[-4px]"
+                            : "opacity-100 translate-x-0 delay-100",
+                    ].join(" ")}
+                >
+                    <span className="font-semibold text-[var(--color-foreground)] whitespace-nowrap pointer-events-none">
+                        NutriAI
+                    </span>
 
-                {/* Collapse Icon (visible only when expanded) */}
-                <AnimatePresence initial={false}>
-                    {!isCollapsed && (
-                        <motion.div
-                            key="collapse-icon"
-                            initial={{ opacity: 0, x: 10 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            exit={{ opacity: 0, x: 10 }}
-                            transition={{ duration: 0.25 }}
-                            className="ml-auto hidden md:flex text-[var(--color-foreground)]"
-                        >
-                            <PanelLeftClose size={18} />
-                        </motion.div>
-                    )}
-                </AnimatePresence>
+                    {/* Collapse icon (desktop only) */}
+                    <PanelLeftClose
+                        size={18}
+                        className="hidden md:block text-[var(--color-foreground)] transition-transform duration hover:rotate-6"
+                    />
+                </div>
             </button>
 
-            {/* Mobile close button */}
-            {isMobileOpen && (
-                <button
-                    className="ml-auto p-2 rounded-lg hover:bg-[var(--color-card)] text-[var(--color-foreground)] transition-colors md:hidden"
-                    onClick={() => setIsMobileOpen?.(false)}
-                    aria-label="Close sidebar"
-                >
-                    <X size={18} />
-                </button>
-            )}
+            {/* Mobile Close Button (visible when open) */}
+            <button
+                className={[
+                    "ml-auto md:hidden p-2 rounded-lg text-[var(--color-foreground)] transition-all duration",
+                    isMobileOpen ? "opacity-100 translate-x-0" : "opacity-0 translate-x-2 pointer-events-none",
+                    "hover:bg-[var(--color-card)]",
+                ].join(" ")}
+                onClick={() => setIsMobileOpen?.(false)}
+                aria-label="Close sidebar"
+            >
+                <X size={18} />
+            </button>
         </div>
     );
 };

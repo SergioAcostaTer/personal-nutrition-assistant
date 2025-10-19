@@ -22,51 +22,44 @@ export const SidebarButton = ({
     useShortcut(shortcut, onClick);
 
     const base =
-        "w-full flex items-center rounded-lg px-3 py-2.5 transition-all focus:outline-none focus:ring-2 focus:ring-[var(--color-border)]";
+        "group relative flex items-center rounded-lg px-3 py-2.5 transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-[var(--color-border)]";
     const visual =
         variant === "primary"
             ? "border border-[var(--color-border)] hover:bg-[var(--color-card)] font-medium"
             : "hover:bg-[var(--color-card)]";
-    const layout = collapsed ? "justify-center" : "gap-3";
 
     return (
         <button
             onClick={onClick}
-            title={label + (shortcut ? ` (${shortcut.join(" + ")})` : "")}
-            className={[base, visual, layout].join(" ")}
+            title={label + (shortcut ? ` (${shortcut.join(' + ')})` : '')}
             aria-label={label}
+            className={[base, visual, "w-full overflow-hidden"].join(" ")}
         >
-            <div className="flex items-center justify-center text-[var(--color-foreground)]">
+            {/* Icon — fixed position, never moves */}
+            <div className="flex items-center justify-center text-[var(--color-foreground)] flex-shrink-0">
                 {icon}
             </div>
 
-            {/* Animated label */}
-            <span
+            {/* Animated label (absolutely positioned to avoid flex jumps) */}
+            <div
                 className={[
-                    "text-sm text-[var(--color-foreground)] text-left flex-1",
-                    "transition-all duration-200",
+                    "absolute left-10 right-3 flex items-center justify-between pointer-events-none transition-all duration-300 ease-in-out",
                     collapsed
-                        ? "opacity-0 -translate-x-2 w-0 max-w-0 overflow-hidden pointer-events-none"
-                        : "opacity-100 translate-x-0 w-auto max-w-full",
+                        ? "opacity-0 translate-x-[-4px]"
+                        : "opacity-100 translate-x-0 delay-100",
                 ].join(" ")}
             >
-                {label}
-            </span>
+                <span className="text-sm text-[var(--color-foreground)] truncate pointer-events-none">
+                    {label}
+                </span>
 
-            {/* Shortcut hint */}
-            {shortcut && shortcut.length > 0 && (
-                <div
-                    className={[
-                        "text-xs text-[var(--color-foreground)] opacity-40",
-                        "transition-all duration-200",
-                        collapsed
-                            ? "opacity-0 -translate-x-2 w-0 max-w-0 overflow-hidden pointer-events-none"
-                            : "opacity-100 translate-x-0 w-auto max-w-full",
-                    ].join(" ")}
-                >
-                    {shortcut.join(" + ")}
-                </div>
-            )}
+                {/* Shortcut hint — only visible on hover */}
+                {shortcut && shortcut.length > 0 && (
+                    <div className="text-xs text-[var(--color-foreground)] opacity-0 group-hover:opacity-40 transition-opacity ease-in-out duration-200">
+                        {shortcut.join(" + ")}
+                    </div>
+                )}
+            </div>
         </button>
     );
 };
