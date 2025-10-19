@@ -12,9 +12,9 @@ export default function ChatInput() {
 
     return (
         <div className="p-4 flex flex-col items-center">
-            <div className="mb-2">
+            <div className="mb-2 w-full max-w-2xl flex flex-row p-2 rounded-xl border border-gray-300 bg-white">
                 <textarea
-                    className="w-full p-2 border border-gray-300 rounded-md resize-none"
+                    className="w-full p-2 rounded-md resize-none"
                     rows={3}
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
