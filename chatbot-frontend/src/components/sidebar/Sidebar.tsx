@@ -45,7 +45,7 @@ export default function Sidebar() {
 
             <aside
                 className={`
-          h-screen flex flex-col transition-all duration-300 ease-in-out
+          h-screen flex flex-col transition-all duration-300 ease-in-out gap-2
           border-r border-[var(--color-border)] bg-[var(--color-card)] text-[var(--color-foreground)] z-50
           ${isDesktop ? "static" : "fixed top-0 left-0"}
           ${isMobileOpen || isDesktop ? "translate-x-0" : "-translate-x-full"}
@@ -61,14 +61,14 @@ export default function Sidebar() {
 
                 <nav className="flex-1 px-2 overflow-y-auto space-y-2">
                     <SidebarButton
-                        icon={<Plus size={18} className="text-[var(--color-foreground)]" />}
+                        icon={<Plus size={20} className="text-[var(--color-foreground)]" />}
                         label="New Chat"
                         onClick={() => console.log("New Chat")}
                         collapsed={isDesktop && isCollapsed}
                     />
 
                     <SidebarButton
-                        icon={<Search size={16} className="text-[var(--color-foreground)]" />}
+                        icon={<Search size={18} className="text-[var(--color-foreground)]" />}
                         label="Search"
                         onClick={() => console.log("Search")}
                         collapsed={isDesktop && isCollapsed}

@@ -36,7 +36,7 @@ export const SidebarButton = ({
                     marginLeft: collapsed ? 0 : 12,
                 }}
             >
-                <span className="text-sm text-[var(--color-foreground)] whitespace-nowrap">
+                <span className="text-md text-[var(--color-foreground)] whitespace-nowrap font-bold">
                     {label}
                 </span>
             </div>
