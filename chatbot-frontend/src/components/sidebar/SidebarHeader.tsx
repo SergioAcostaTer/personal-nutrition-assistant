@@ -1,5 +1,6 @@
 "use client";
 
+import { AnimatePresence, motion } from "framer-motion";
 import { Apple, PanelLeftClose, X } from "lucide-react";
 
 type SidebarHeaderProps = {
@@ -16,41 +17,68 @@ export const SidebarHeader = ({
     setIsMobileOpen,
 }: SidebarHeaderProps) => {
     return (
-        <div className="h-14 px-2 flex items-center justify-between border-b border-[var(--color-border)]">
-            {/* Logo + Title */}
-            <div className="flex items-center gap-2 px-2">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-accent)] flex items-center justify-center">
+        <div className="flex h-14 items-center border-b border-[var(--color-border)] px-2">
+            {/* Collapse / Expand Button (Logo area) */}
+            <button
+                className={[
+                    "flex items-center rounded-lg px-2 py-2 hover:bg-[var(--color-card)] transition-colors duration-200",
+                    "w-full md:w-auto justify-start gap-2",
+                ].join(" ")}
+                onClick={() => setIsCollapsed(!isCollapsed)}
+                aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+            >
+                {/* Logo Icon */}
+                <motion.div
+                    layout
+                    transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                    className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-accent)] flex-shrink-0"
+                >
                     <Apple size={20} className="text-white" strokeWidth={2.5} />
-                </div>
-                <span className="font-semibold text-[var(--color-foreground)]">
-                    NutriAI
-                </span>
-            </div>
+                </motion.div>
 
-            {/* Controls */}
-            <div className="flex items-center">
-                {/* Desktop: Collapse Button */}
-                {!isMobileOpen && (
-                    <button
-                        className="hidden md:flex p-2 rounded-lg hover:bg-[var(--color-card)] text-[var(--color-foreground)] transition-colors"
-                        onClick={() => setIsCollapsed(!isCollapsed)}
-                        aria-label="Collapse sidebar"
-                    >
-                        <PanelLeftClose size={18} />
-                    </button>
-                )}
+                {/* Animated Title (only visible when expanded) */}
+                <AnimatePresence initial={false}>
+                    {!isCollapsed && (
+                        <motion.span
+                            key="title"
+                            initial={{ opacity: 0, x: -10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: -10 }}
+                            transition={{ duration: 0.25 }}
+                            className="font-semibold text-[var(--color-foreground)] whitespace-nowrap overflow-hidden"
+                        >
+                            NutriAI
+                        </motion.span>
+                    )}
+                </AnimatePresence>
 
-                {/* Mobile: Close Button */}
-                {isMobileOpen && (
-                    <button
-                        className="md:hidden p-2 rounded-lg hover:bg-[var(--color-card)] text-[var(--color-foreground)] transition-colors"
-                        onClick={() => setIsMobileOpen?.(false)}
-                        aria-label="Close sidebar"
-                    >
-                        <X size={18} />
-                    </button>
-                )}
-            </div>
+                {/* Collapse Icon (visible only when expanded) */}
+                <AnimatePresence initial={false}>
+                    {!isCollapsed && (
+                        <motion.div
+                            key="collapse-icon"
+                            initial={{ opacity: 0, x: 10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: 10 }}
+                            transition={{ duration: 0.25 }}
+                            className="ml-auto hidden md:flex text-[var(--color-foreground)]"
+                        >
+                            <PanelLeftClose size={18} />
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+            </button>
+
+            {/* Mobile close button */}
+            {isMobileOpen && (
+                <button
+                    className="ml-auto p-2 rounded-lg hover:bg-[var(--color-card)] text-[var(--color-foreground)] transition-colors md:hidden"
+                    onClick={() => setIsMobileOpen?.(false)}
+                    aria-label="Close sidebar"
+                >
+                    <X size={18} />
+                </button>
+            )}
         </div>
     );
 };

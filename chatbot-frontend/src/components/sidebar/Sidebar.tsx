@@ -2,7 +2,7 @@
 
 import { useSidebarStore } from "@/lib/store/sidebarStore";
 import { History, Plus, Search, Trash2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { SidebarButton } from "./SidebarButton";
 import { SidebarFooter } from "./SidebarFooter";
 import { SidebarHeader } from "./SidebarHeader";
@@ -30,6 +30,7 @@ export default function Sidebar() {
     const [conversations, setConversations] = useState(mockHistory);
     const [hoveredId, setHoveredId] = useState<number | null>(null);
 
+    // Responsive breakpoint tracking
     useEffect(() => {
         const handleResize = () => {
             const desktop = window.innerWidth >= 768;
@@ -42,34 +43,47 @@ export default function Sidebar() {
     }, [setDesktop, setMobileOpen]);
 
     const handleDelete = (id: number) => {
-        setConversations(conversations.filter(c => c.id !== id));
+        setConversations((prev) => prev.filter((c) => c.id !== id));
     };
 
-    const groupedConversations = conversations.reduce((acc, conv) => {
-        if (!acc[conv.date]) acc[conv.date] = [];
-        acc[conv.date].push(conv);
-        return acc;
-    }, {} as Record<string, typeof conversations>);
+    const groupedConversations = useMemo(() => {
+        return conversations.reduce((acc, conv) => {
+            if (!acc[conv.date]) acc[conv.date] = [];
+            acc[conv.date].push(conv);
+            return acc;
+        }, {} as Record<string, typeof conversations>);
+    }, [conversations]);
+
+    const sidebarWidthClass = isDesktop
+        ? isCollapsed
+            ? "w-16" // 64px collapsed
+            : "w-64" // 256px expanded
+        : "w-64"; // mobile drawer width
 
     return (
         <>
-            {/* Mobile Overlay */}
+            {/* Mobile overlay */}
             {!isDesktop && isMobileOpen && (
-                <div
-                    className="fixed inset-0 bg-black/50 z-40"
+                <button
+                    aria-label="Close sidebar overlay"
+                    className="fixed inset-0 z-40 bg-black/50"
                     onClick={() => setMobileOpen(false)}
                 />
             )}
 
             {/* Sidebar */}
             <aside
-                className={`
-                    h-screen flex flex-col transition-all duration-300 ease-in-out
-                    border-r border-[var(--color-border)] bg-[var(--color-sidebar-bg)] z-50
-                    ${isDesktop ? "static" : "fixed top-0 left-0"}
-                    ${isMobileOpen || isDesktop ? "translate-x-0" : "-translate-x-full"}
-                    ${isDesktop ? (isCollapsed ? "w-0 md:w-0" : "w-[260px]") : "w-[260px]"}
-                `}
+                role="navigation"
+                aria-label="Primary"
+                className={[
+                    "h-screen flex flex-col border-r border-[var(--color-border)]",
+                    "bg-[var(--color-sidebar-bg)] z-50",
+                    "transition-[transform,width] duration-300 ease-in-out",
+                    isDesktop ? "static" : "fixed top-0 left-0",
+                    isMobileOpen || isDesktop ? "translate-x-0" : "-translate-x-full",
+                    sidebarWidthClass,
+                    "overflow-hidden", // prevents any content leakage when collapsed
+                ].join(" ")}
             >
                 <SidebarHeader
                     isCollapsed={isCollapsed}
@@ -78,34 +92,44 @@ export default function Sidebar() {
                     setIsMobileOpen={setMobileOpen}
                 />
 
-                <div className="flex-1 overflow-y-auto px-2 py-2">
-                    {/* New Chat Button */}
+                <div className="flex-1 overflow-y-auto px-2 py-2 flex flex-col gap-3">
+                    {/* New Chat */}
                     <SidebarButton
                         icon={<Plus size={18} />}
                         label="New chat"
                         onClick={() => console.log("New Chat")}
-                        collapsed={false}
+                        collapsed={isCollapsed}
                         variant="primary"
+                        shortcut={["Ctrl", "Shift", "O"]}
                     />
 
-                    {/* Search Button */}
-                    <div className="mt-2 mb-4">
-                        <SidebarButton
-                            icon={<Search size={18} />}
-                            label="Search"
-                            onClick={() => console.log("Search")}
-                            collapsed={false}
-                        />
-                    </div>
+                    {/* Search */}
+                    <SidebarButton
+                        icon={<Search size={18} />}
+                        label="Search"
+                        onClick={() => console.log("Search")}
+                        collapsed={isCollapsed}
+                        shortcut={["Ctrl", "K"]}
+                    />
 
                     {/* Conversation History */}
-                    <div className="space-y-4">
+                    <div className="space-y-3">
                         {Object.entries(groupedConversations).map(([date, convs]) => (
                             <div key={date}>
-                                <h3 className="px-3 py-1 text-xs font-semibold text-[var(--color-foreground)] opacity-50">
+                                {/* Section header hidden when collapsed */}
+                                <h3
+                                    className={[
+                                        "px-3 text-xs font-semibold text-[var(--color-foreground)] opacity-50",
+                                        "transition-all duration-200",
+                                        isCollapsed
+                                            ? "h-0 opacity-0 -translate-y-1 sr-only" // visually hide to keep a11y quiet & avoid spacing
+                                            : "h-5 translate-y-0",
+                                    ].join(" ")}
+                                >
                                     {date}
                                 </h3>
-                                <div className="space-y-1 mt-1">
+
+                                <div className="mt-1 space-y-1">
                                     {convs.map((conv) => (
                                         <div
                                             key={conv.id}
@@ -114,19 +138,36 @@ export default function Sidebar() {
                                             onMouseLeave={() => setHoveredId(null)}
                                         >
                                             <button
-                                                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-[var(--color-card)] transition-colors text-left"
-                                                onClick={() => console.log("Open conversation", conv.id)}
+                                                className={[
+                                                    "w-full flex items-center rounded-lg px-3 py-2.5 text-left",
+                                                    "hover:bg-[var(--color-card)] transition-colors",
+                                                    isCollapsed ? "justify-center" : "gap-3",
+                                                ].join(" ")}
+                                                onClick={() =>
+                                                    console.log("Open conversation", conv.id)
+                                                }
                                             >
-                                                <History size={16} className="text-[var(--color-foreground)] opacity-60 flex-shrink-0" />
-                                                <span className="flex-1 text-sm text-[var(--color-foreground)] truncate">
+                                                <History
+                                                    size={16}
+                                                    className="flex-shrink-0 text-[var(--color-foreground)] opacity-60"
+                                                />
+                                                <span
+                                                    className={[
+                                                        "text-sm text-[var(--color-foreground)] truncate flex-1",
+                                                        "transition-all duration-200",
+                                                        isCollapsed
+                                                            ? "opacity-0 -translate-x-2 w-0 max-w-0 overflow-hidden pointer-events-none"
+                                                            : "opacity-100 translate-x-0 w-auto max-w-full",
+                                                    ].join(" ")}
+                                                >
                                                     {conv.title}
                                                 </span>
                                             </button>
 
-                                            {/* Delete Button */}
-                                            {hoveredId === conv.id && (
+                                            {/* Delete button only when expanded (prevents overflow in collapsed) */}
+                                            {!isCollapsed && hoveredId === conv.id && (
                                                 <button
-                                                    className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-md hover:bg-red-500 hover:bg-opacity-10 text-[var(--color-foreground)] hover:text-red-500 transition-all"
+                                                    className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-md hover:bg-red-500/10 text-[var(--color-foreground)] hover:text-red-500 transition-all"
                                                     onClick={(e) => {
                                                         e.stopPropagation();
                                                         handleDelete(conv.id);
@@ -144,10 +185,7 @@ export default function Sidebar() {
                     </div>
                 </div>
 
-                <SidebarFooter
-                    isCollapsed={false}
-                    setIsCollapsed={setCollapsed}
-                />
+                <SidebarFooter isCollapsed={isCollapsed} setIsCollapsed={setCollapsed} />
             </aside>
         </>
     );
