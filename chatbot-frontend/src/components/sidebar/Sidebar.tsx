@@ -2,7 +2,9 @@
 
 import { useSidebarStore } from "@/lib/store/sidebarStore";
 import { Plus, Search } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { v4 as uuidv4 } from "uuid";
 import { SidebarButton } from "./SidebarButton";
 import { SidebarFooter } from "./SidebarFooter";
 import { SidebarHeader } from "./SidebarHeader";
@@ -16,6 +18,7 @@ export default function Sidebar() {
         setMobileOpen,
         setDesktop,
     } = useSidebarStore();
+    const router = useRouter();
 
     useEffect(() => {
         const handleResize = () => {
@@ -28,11 +31,7 @@ export default function Sidebar() {
         return () => window.removeEventListener("resize", handleResize);
     }, [setDesktop, setMobileOpen]);
 
-    const sidebarWidth = isDesktop
-        ? isCollapsed
-            ? "w-16"
-            : "w-64"
-        : "w-64";
+    const sidebarWidth = isDesktop ? (isCollapsed ? "w-16" : "w-64") : "w-64";
 
     return (
         <>
@@ -49,7 +48,7 @@ export default function Sidebar() {
             <aside
                 className={[
                     "h-screen flex flex-col border-r border-[var(--color-border)] bg-[var(--color-sidebar-bg)] z-50",
-                    "transition-all duration-300 ease-in-out will-change-transform",
+                    "transition-all duration-300 ease-in-out",
                     isDesktop ? "static" : "fixed top-0 left-0 transform-gpu",
                     isDesktop
                         ? ""
@@ -57,8 +56,6 @@ export default function Sidebar() {
                             ? "translate-x-0"
                             : "-translate-x-full",
                     sidebarWidth,
-                    "overflow-hidden shadow-[0_2px_8px_rgba(0,0,0,0.04)] dark:shadow-[0_2px_8px_rgba(0,0,0,0.25)]",
-                    "h-[100svh]",
                 ].join(" ")}
             >
                 <SidebarHeader
@@ -72,7 +69,10 @@ export default function Sidebar() {
                     <SidebarButton
                         icon={<Plus size={18} />}
                         label="New chat"
-                        onClick={() => console.log("New Chat")}
+                        onClick={() => {
+                            const id = uuidv4();
+                            router.push(`/c/${id}`);
+                        }}
                         collapsed={isCollapsed}
                         variant="primary"
                         shortcut={["Ctrl", "Shift", "N"]}

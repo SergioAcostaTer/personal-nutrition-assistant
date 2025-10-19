@@ -1,11 +1,18 @@
 "use client";
 
 import { Paperclip, Send } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { v4 as uuidv4 } from "uuid";
 
 export default function ChatInput() {
     const [message, setMessage] = useState("");
     const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+    const router = useRouter();
+    const pathname = usePathname();
+
+    // detect if we’re inside an existing chat
+    const chatId = pathname.startsWith("/c/") ? pathname.split("/c/")[1] : null;
 
     const adjustHeight = useCallback(() => {
         const textarea = textareaRef.current;
@@ -16,18 +23,32 @@ export default function ChatInput() {
         const newHeight = Math.min(textarea.scrollHeight, maxHeight);
 
         textarea.style.height = `${newHeight}px`;
-        textarea.style.overflowY = textarea.scrollHeight > maxHeight ? "auto" : "hidden";
+        textarea.style.overflowY =
+            textarea.scrollHeight > maxHeight ? "auto" : "hidden";
     }, []);
 
     useEffect(() => {
         adjustHeight();
     }, [message, adjustHeight]);
 
-    const handleSend = useCallback(() => {
+    const handleSend = useCallback(async () => {
         if (!message.trim()) return;
-        console.log("Send:", message);
+
+        const text = message.trim();
         setMessage("");
-    }, [message]);
+
+        // if we’re not in a chat, create a new one and replace path
+        if (!chatId) {
+            const newId = uuidv4();
+            router.replace(`/c/${newId}`);
+            console.log("Created new chat:", newId, "with first message:", text);
+            return;
+        }
+
+        // normal message send
+        console.log("Send:", { chatId, text });
+        // TODO: hook this up to chat store or API
+    }, [message, chatId, router]);
 
     const handleKeyDown = useCallback(
         (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
