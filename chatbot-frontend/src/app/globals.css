@@ -3,20 +3,30 @@
 /* ---------- Color System ---------- */
 :root {
   --background: #ffffff;
-  --foreground: #171717;
-  --primary: #2563eb; /* blue-600 */
-  --primary-hover: #1d4ed8;
-  --border: #e5e7eb;
-  --card: #f9fafb;
+  --foreground: #202123;
+  --primary: #10a37f;
+  --primary-hover: #0d8c6f;
+  --secondary: #f7f7f8;
+  --border: #e5e5e5;
+  --card: #ffffff;
+  --sidebar-bg: #f7f7f8;
+  --input-bg: #ffffff;
+  --accent: #ff6b35;
+  --success: #10a37f;
 }
 
 [data-theme="dark"] {
-  --background: #0a0a0a;
-  --foreground: #ededed;
-  --primary: #3b82f6;
-  --primary-hover: #60a5fa;
-  --border: #3e3f4b;
-  --card: #202123;
+  --background: #343541;
+  --foreground: #ececf1;
+  --primary: #10a37f;
+  --primary-hover: #1ab88c;
+  --secondary: #444654;
+  --border: #565869;
+  --card: #444654;
+  --sidebar-bg: #202123;
+  --input-bg: #40414f;
+  --accent: #ff8c6b;
+  --success: #19c37d;
 }
 
 /* ---------- Tailwind Bridge ---------- */
@@ -25,8 +35,13 @@
   --color-foreground: var(--foreground);
   --color-primary: var(--primary);
   --color-primary-hover: var(--primary-hover);
+  --color-secondary: var(--secondary);
   --color-border: var(--border);
   --color-card: var(--card);
+  --color-sidebar-bg: var(--sidebar-bg);
+  --color-input-bg: var(--input-bg);
+  --color-accent: var(--accent);
+  --color-success: var(--success);
 }
 
 /* ---------- Base Styles ---------- */
@@ -36,8 +51,8 @@ html, body {
   overflow: hidden;
   background: var(--color-background);
   color: var(--color-foreground);
-  transition: background 0.3s ease, color 0.3s ease;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  transition: background 0.2s ease, color 0.2s ease;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
 * {
@@ -46,4 +61,55 @@ html, body {
 
 button {
   cursor: pointer;
+}
+
+/* ---------- Custom Scrollbar ---------- */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* ---------- Message Animations ---------- */
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.message-enter {
+  animation: slideUp 0.3s ease-out;
+}
+
+/* ---------- Gradient Text ---------- */
+.gradient-text {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }

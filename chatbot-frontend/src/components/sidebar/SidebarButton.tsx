@@ -1,4 +1,5 @@
 "use client";
+
 import { useShortcut } from "@/hooks/useShortcut";
 
 type ButtonProps = {
@@ -7,6 +8,7 @@ type ButtonProps = {
     onClick: () => void;
     collapsed: boolean;
     shortcut?: string[];
+    variant?: "default" | "primary";
 };
 
 export const SidebarButton = ({
@@ -15,37 +17,34 @@ export const SidebarButton = ({
     onClick,
     collapsed,
     shortcut,
+    variant = "default"
 }: ButtonProps) => {
     useShortcut(shortcut, onClick);
+
+    const baseClasses = "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all";
+    const variantClasses = variant === "primary"
+        ? "border border-[var(--color-border)] hover:bg-[var(--color-card)] font-medium"
+        : "hover:bg-[var(--color-card)]";
 
     return (
         <button
             onClick={onClick}
             title={label + (shortcut ? ` (${shortcut.join(" + ")})` : "")}
-            className="group relative w-full flex items-center px-3 py-2 rounded-lg hover:bg-[var(--color-border)] transition-colors cursor-pointer"
+            className={`${baseClasses} ${variantClasses}`}
         >
-            <div className="flex items-center justify-center w-6 h-6 shrink-0">
+            <div className="flex items-center justify-center text-[var(--color-foreground)]">
                 {icon}
             </div>
 
-            <div
-                className={`overflow-hidden transition-all duration-300 ease-in-out`}
-                style={{
-                    maxWidth: collapsed ? 0 : 200,
-                    opacity: collapsed ? 0 : 1,
-                    marginLeft: collapsed ? 0 : 12,
-                }}
-            >
-                <span className="text-md text-[var(--color-foreground)] whitespace-nowrap font-bold">
+            {!collapsed && (
+                <span className="text-sm text-[var(--color-foreground)] flex-1 text-left">
                     {label}
                 </span>
-            </div>
+            )}
 
             {shortcut && shortcut.length > 0 && !collapsed && (
-                <div
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-sm text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap"
-                >
-                    {shortcut.join(" + ")}
+                <div className="text-xs text-[var(--color-foreground)] opacity-40">
+                    {shortcut.join("+")}
                 </div>
             )}
         </button>

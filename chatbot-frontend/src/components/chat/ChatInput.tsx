@@ -1,5 +1,6 @@
 "use client";
-import { ArrowUp } from "lucide-react";
+
+import { Paperclip, Send } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 export default function ChatInput() {
@@ -11,8 +12,7 @@ export default function ChatInput() {
         if (!textarea) return;
 
         textarea.style.height = "auto";
-        const lineHeight = parseInt(getComputedStyle(textarea).lineHeight || "0", 10);
-        const maxHeight = lineHeight * 6;
+        const maxHeight = 200;
         const newHeight = Math.min(textarea.scrollHeight, maxHeight);
 
         textarea.style.height = `${newHeight}px`;
@@ -40,31 +40,45 @@ export default function ChatInput() {
     );
 
     return (
-        <div className="w-full border-t border-[var(--color-border)] bg-[var(--color-card)] px-4 py-3 flex flex-col items-center">
-            <div className="relative w-full max-w-3xl flex items-center bg-[var(--color-background)] border border-[var(--color-border)] rounded-2xl shadow-sm p-2">
-                <textarea
-                    ref={textareaRef}
-                    id="chat-input"
-                    className="flex-1 resize-none bg-transparent outline-none text-sm leading-normal placeholder:text-gray-400 text-[var(--color-foreground)]"
-                    value={message}
-                    placeholder="Send a message..."
-                    onChange={(e) => setMessage(e.target.value)}
-                    onKeyDown={handleKeyDown}
-                    rows={1}
-                    style={{ minHeight: "1.5rem", paddingTop: "0.25rem" }}
-                />
-                <button
-                    className="ml-2 flex-shrink-0 w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-full bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-hover)] transition disabled:opacity-40 disabled:cursor-not-allowed"
-                    onClick={handleSend}
-                    disabled={!message.trim()}
-                    aria-label="Send message"
-                >
-                    <ArrowUp size={16} />
-                </button>
+        <div className="border-t border-[var(--color-border)] bg-[var(--color-background)] px-4 py-4">
+            <div className="max-w-3xl mx-auto">
+                <div className="relative flex items-end gap-2 bg-[var(--color-input-bg)] border border-[var(--color-border)] rounded-3xl shadow-sm px-4 py-3 focus-within:border-[var(--color-primary)] focus-within:shadow-md transition-all">
+                    {/* Attachment Button */}
+                    <button
+                        className="p-2 rounded-lg hover:bg-[var(--color-secondary)] text-[var(--color-foreground)] transition-colors flex-shrink-0"
+                        aria-label="Attach file"
+                        onClick={() => console.log("Attach file")}
+                    >
+                        <Paperclip size={20} />
+                    </button>
+
+                    {/* Textarea */}
+                    <textarea
+                        ref={textareaRef}
+                        className="flex-1 resize-none bg-transparent outline-none text-[15px] leading-6 placeholder:text-[var(--color-foreground)] placeholder:opacity-40 text-[var(--color-foreground)] max-h-[200px]"
+                        value={message}
+                        placeholder="Message NutriAI..."
+                        onChange={(e) => setMessage(e.target.value)}
+                        onKeyDown={handleKeyDown}
+                        rows={1}
+                    />
+
+                    {/* Send Button */}
+                    <button
+                        className="flex-shrink-0 p-2 rounded-lg bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-hover)] transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-[var(--color-primary)]"
+                        onClick={handleSend}
+                        disabled={!message.trim()}
+                        aria-label="Send message"
+                    >
+                        <Send size={18} />
+                    </button>
+                </div>
+
+                {/* Footer Text */}
+                <p className="mt-3 text-xs text-center text-[var(--color-foreground)] opacity-50">
+                    NutriAI can make mistakes. Consider checking important information.
+                </p>
             </div>
-            <p className="mt-2 text-[11px] text-gray-500 text-center">
-                This chat can make mistakes. Check important info.
-            </p>
         </div>
     );
 }

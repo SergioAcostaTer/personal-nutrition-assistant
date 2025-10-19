@@ -3,9 +3,9 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-    title: "Chatbot UI",
+    title: "NutriAI - Your Personal Nutrition Assistant",
     description:
-        "A simple ChatGPT-like chatbot frontend built with Next.js + TailwindCSS",
+        "Get personalized nutrition advice, meal planning, and dietary guidance powered by AI",
 };
 
 export default function RootLayout({

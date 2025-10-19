@@ -5,7 +5,7 @@ import Sidebar from "@/components/sidebar/Sidebar";
 
 export default function Home() {
     return (
-        <div className="flex h-[100svh] overflow-hidden bg-gray-100 text-gray-800">
+        <div className="flex h-[100svh] overflow-hidden bg-[var(--color-background)]">
             <Sidebar />
             <main className="flex flex-1 flex-col">
                 <ChatHeader />
