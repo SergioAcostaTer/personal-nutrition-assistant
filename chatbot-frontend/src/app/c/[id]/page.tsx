@@ -1,25 +1,28 @@
-import { container } from "@/composition/container";
+"use client";
+
+import { useChatStore } from "@/application/store/useChatStore";
 import ChatPage from "@/ui/ChatPage";
-import { notFound } from "next/navigation";
+import { useParams } from "next/navigation";
+import { useEffect } from "react";
 
-export const dynamic = "force-dynamic";
+/**
+ * Client-only chat page — loads instantly, hydrates messages in background.
+ * Perfect for fast navigation UX.
+ */
+export default function ChatClientPage() {
+    const params = useParams();
+    const id = params?.id as string | undefined;
+    const { sessions, open, activeId } = useChatStore();
 
-export default async function ChatSSRPage({
-    params,
-}: {
-    params: Promise<{ id: string }>;
-}) {
-    const { id } = await params;
+    useEffect(() => {
+        if (!id) return;
+        // only open if not already loaded
+        if (!sessions[id]) {
+            open(id).catch(console.error);
+        } else if (activeId !== id) {
+            useChatStore.setState({ activeId: id });
+        }
+    }, [id, open, sessions, activeId]);
 
-    // 👇 if using mock (localStorage-based), skip SSR open
-    if (process.env.NEXT_PUBLIC_USE_MOCK === "true") {
-        return <ChatPage />;
-    }
-
-    try {
-        const chat = await container.openSession.execute(id);
-        return <ChatPage initialChat={chat} />;
-    } catch {
-        notFound();
-    }
+    return <ChatPage />;
 }

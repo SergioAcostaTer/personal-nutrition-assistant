@@ -38,7 +38,7 @@ export default function ChatArea({ chat }: { chat?: ChatSession }) {
 
     if (!chat) {
         return (
-            <div className="flex-1 overflow-y-auto bg-[var(--color-background)]">
+            <div className="flex-1 overflow-y-auto bg-[var(--color-background)] max-w-screen">
                 <div className="max-w-3xl mx-auto px-4 py-12 flex flex-col items-center justify-center min-h-full">
                     <div className="mb-8 relative">
                         <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-accent)] flex items-center justify-center shadow">
@@ -80,14 +80,14 @@ export default function ChatArea({ chat }: { chat?: ChatSession }) {
     }
 
     return (
-        <div className="flex-1 overflow-y-auto bg-[var(--color-background)] px-4 py-6">
+        <div className="flex-1 overflow-y-auto bg-[var(--color-background)] px-4 py-6 max-w-screen">
             <div className="max-w-3xl mx-auto flex flex-col gap-3">
                 {chat.messages.map((m, i) => (
                     <div
                         key={i}
                         className={`message-enter p-3 rounded-xl max-w-[80%] ${m.role === "user"
-                                ? "self-end bg-[var(--color-primary)] text-white"
-                                : "self-start bg-[var(--color-card)] text-[var(--color-foreground)]"
+                            ? "self-end bg-[var(--color-primary)] text-white"
+                            : "self-start bg-[var(--color-card)] text-[var(--color-foreground)]"
                             }`}
                     >
                         {m.content}

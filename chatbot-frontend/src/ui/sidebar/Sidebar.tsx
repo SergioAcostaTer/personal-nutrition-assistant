@@ -13,7 +13,7 @@ interface Props {
 }
 
 export default function Sidebar({ initialList = [] }: Props) {
-    const { sidebar, bootstrap, newChat } = useChatStore();
+    const { sidebar, bootstrap, newChat, open } = useChatStore();
     const { goToChat, currentId } = useChatNavigation();
     const activeChatId = currentId();
     const {
@@ -46,7 +46,16 @@ export default function Sidebar({ initialList = [] }: Props) {
 
     const handleNew = async () => {
         const id = await newChat();
-        goToChat(id);
+        goToChat(id); // Navigate instantly
+        if (!isDesktop) setMobileOpen(false);
+    };
+
+    const handleChatClick = (chatId: string) => {
+        // Navigate instantly
+        goToChat(chatId);
+        // Trigger background load
+        open(chatId);
+        // Close mobile sidebar
         if (!isDesktop) setMobileOpen(false);
     };
 
@@ -101,10 +110,7 @@ export default function Sidebar({ initialList = [] }: Props) {
                     {chats.map((chat) => (
                         <li
                             key={chat.id}
-                            onClick={() => {
-                                goToChat(chat.id);
-                                if (!isDesktop) setMobileOpen(false);
-                            }}
+                            onClick={() => handleChatClick(chat.id)}
                             className={`flex items-center justify-between p-2 rounded-lg cursor-pointer transition-colors
                                 ${activeChatId === chat.id
                                     ? "bg-[var(--color-secondary)] font-medium"

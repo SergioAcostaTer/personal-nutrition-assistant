@@ -22,7 +22,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                 <ThemeProvider>
                     <UseCasesProvider>
                         <Sidebar initialList={sidebar} />
-                        <main className="flex-1 flex flex-col">{children}</main>
+                        <main className="flex-1 flex flex-col max-h-screen overflow-hidden">
+                            {children}
+                        </main>
                     </UseCasesProvider>
                 </ThemeProvider>
             </body>

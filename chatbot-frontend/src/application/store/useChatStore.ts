@@ -10,7 +10,8 @@ interface State {
     sidebar: SidebarItem[];
     sessions: Record<string, ChatSession>;
     activeId?: string;
-    loading: boolean;
+    loading: Record<string, boolean>; // Track loading per session
+    errors: Record<string, string>; // Track errors per session
 
     bootstrap(): Promise<void>;
     open(id: string): Promise<void>;
@@ -24,7 +25,8 @@ export const useChatStore = create<State>((set, get) => ({
     sidebar: [],
     sessions: {},
     activeId: undefined,
-    loading: false,
+    loading: {},
+    errors: {},
 
     async bootstrap() {
         const list = await container.listSessions.execute();
@@ -33,46 +35,68 @@ export const useChatStore = create<State>((set, get) => ({
 
     async open(id: string) {
         const existing = get().sessions[id];
-        // If already loaded, just switch active and skip fetch
+
+        // Instantly set active — navigation happens immediately
+        set({ activeId: id });
+
+        // If already loaded, we're done
         if (existing) {
-            set({ activeId: id });
             return;
         }
 
-        // Instantly set an empty session — for fast UI swap
-        const placeholder = { id, title: "Loading…", messages: [] };
+        // Set loading state for this specific session
         set((s) => ({
-            sessions: { ...s.sessions, [id]: placeholder },
-            activeId: id,
-            loading: true,
+            loading: { ...s.loading, [id]: true },
+            errors: { ...s.errors, [id]: "" },
         }));
 
-        // Fetch messages asynchronously
+        // Fetch messages asynchronously in the background
         try {
             const chat = await container.openSession.execute(id);
             set((s) => ({
                 sessions: { ...s.sessions, [id]: chat },
-                activeId: id,
+                loading: { ...s.loading, [id]: false },
             }));
         } catch (e) {
             console.error("Failed to open chat:", e);
-        } finally {
-            set({ loading: false });
+            set((s) => ({
+                loading: { ...s.loading, [id]: false },
+                errors: { ...s.errors, [id]: "Failed to load chat" },
+            }));
         }
     },
 
-
     async newChat(firstMessage?: string) {
         const id = crypto.randomUUID();
-        const created = await container.createSession.execute(id, "New Chat");
+
+        // Instantly create placeholder and switch to it
+        const placeholder = { id, title: "New Chat", messages: [], lastMessageAt: new Date().toISOString() };
         set(s => ({
-            sessions: { ...s.sessions, [id]: created },
-            sidebar: [{ id, title: created.title, lastMessageAt: created.lastMessageAt }, ...s.sidebar],
+            sessions: { ...s.sessions, [id]: placeholder },
+            sidebar: [{ id, title: placeholder.title, lastMessageAt: placeholder.lastMessageAt }, ...s.sidebar],
             activeId: id,
+            loading: { ...s.loading, [id]: true },
         }));
-        if (firstMessage?.trim()) {
-            await get().send(firstMessage.trim());
+
+        // Create on backend in background
+        try {
+            const created = await container.createSession.execute(id, "New Chat");
+            set(s => ({
+                sessions: { ...s.sessions, [id]: created },
+                loading: { ...s.loading, [id]: false },
+            }));
+
+            if (firstMessage?.trim()) {
+                await get().send(firstMessage.trim());
+            }
+        } catch (e) {
+            console.error("Failed to create chat:", e);
+            set(s => ({
+                loading: { ...s.loading, [id]: false },
+                errors: { ...s.errors, [id]: "Failed to create chat" },
+            }));
         }
+
         return id;
     },
 
@@ -100,7 +124,6 @@ export const useChatStore = create<State>((set, get) => ({
                 return { sessions: { ...s.sessions, [sessionId]: { ...c, messages: msgs } } };
             }),
             onAssistantDone: async () => {
-                // Update sidebar lastMessageAt and title (if needed)
                 const sess = get().sessions[sessionId];
                 const last = sess.messages.at(-1)?.createdAt ?? new Date().toISOString();
                 set(s => ({

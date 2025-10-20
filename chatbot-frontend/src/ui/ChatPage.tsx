@@ -13,11 +13,13 @@ interface Props {
 }
 
 export default function ChatPage({ initialChat }: Props) {
-    const { sessions, activeId, open, loading } = useChatStore();
+    const { sessions, activeId, open, loading, errors } = useChatStore();
     const { currentId } = useChatNavigation();
     const chatIdFromUrl = currentId();
     const currentChatId = chatIdFromUrl || activeId;
     const currentChat = currentChatId ? sessions[currentChatId] : initialChat;
+    const isLoading = currentChatId ? loading[currentChatId] : false;
+    const error = currentChatId ? errors[currentChatId] : undefined;
     const initializedRef = useRef(false);
 
     useEffect(() => {
@@ -31,6 +33,7 @@ export default function ChatPage({ initialChat }: Props) {
             }));
             initializedRef.current = true;
         } else if (chatIdFromUrl && !sessions[chatIdFromUrl]) {
+            // This will navigate instantly and load in background
             open(chatIdFromUrl).catch(console.error);
             initializedRef.current = true;
         } else if (chatIdFromUrl && activeId !== chatIdFromUrl) {
@@ -41,7 +44,21 @@ export default function ChatPage({ initialChat }: Props) {
     return (
         <div className="flex flex-col flex-1">
             <ChatHeader />
-            {loading ? (
+            {error ? (
+                <div className="flex-1 flex items-center justify-center bg-[var(--color-background)]">
+                    <div className="flex flex-col items-center gap-3 max-w-md text-center">
+                        <div className="w-16 h-16 rounded-full bg-red-100 dark:bg-red-900/20 flex items-center justify-center">
+                            <span className="text-3xl">⚠️</span>
+                        </div>
+                        <h2 className="text-xl font-semibold text-[var(--color-foreground)]">
+                            {error}
+                        </h2>
+                        <p className="text-sm text-[var(--color-foreground)] opacity-60">
+                            This chat could not be loaded. It may have been deleted or you may not have access to it.
+                        </p>
+                    </div>
+                </div>
+            ) : isLoading ? (
                 <ChatLoader />
             ) : (
                 <ChatArea chat={currentChat} />
