@@ -2,6 +2,7 @@
 
 import { useChatStore } from "@/application/store/useChatStore";
 
+
 /**
  * A reusable hook that sends a message (user + assistant) to the chat API
  * and updates Zustand store.

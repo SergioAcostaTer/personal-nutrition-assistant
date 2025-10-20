@@ -1,44 +1,21 @@
 "use client";
 
 import { useChatStore } from "@/application/store/useChatStore";
-import { ChatSession } from "@/domain/model/ChatSession";
+import { useChatNavigation } from "@/hooks/useChatNavigation";
 import { useSidebarStore } from "@/lib/store/sidebarStore";
 import { Plus, Search } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { v4 as uuidv4 } from "uuid";
 import { SidebarButton } from "./SidebarButton";
 import { SidebarFooter } from "./SidebarFooter";
 import { SidebarHeader } from "./SidebarHeader";
 
-const ChatElement = ({ id, title, lastMessageAt }: Pick<ChatSession, "id" | "title" | "lastMessageAt">) => {
-    return (
-        <li className="flex items-center justify-between w-full">
-            <div className="flex-1">
-                <h4 className="font-medium">{title}</h4>
-                {lastMessageAt && <p className="text-sm text-muted-foreground">{lastMessageAt}</p>}
-            </div>
-        </li>
-    );
-};
+interface Props {
+    initialList?: { id: string; title: string; lastMessageAt?: string }[];
+}
 
-const SidebarBody = () => {
-    const { sidebar, remove } = useChatStore();
-    return (
-        <ul className="flex-1 overflow-y-auto px-2 py-3 flex flex-col gap-3">
-            {sidebar.map((item: { id: string; title: string; lastMessageAt?: string }) => (
-                <ChatElement
-                    key={item.id}
-                    id={item.id}
-                    title={item.title}
-                    lastMessageAt={item.lastMessageAt}
-                />
-            ))}
-        </ul>
-    );
-};
-
-export default function Sidebar() {
+export default function Sidebar({ initialList = [] }: Props) {
+    const { sidebar, bootstrap, newChat } = useChatStore();
+    const { goToChat } = useChatNavigation();
     const {
         isCollapsed,
         isMobileOpen,
@@ -47,10 +24,14 @@ export default function Sidebar() {
         setMobileOpen,
         setDesktop,
     } = useSidebarStore();
-    const router = useRouter();
-    const { bootstrap } = useChatStore();
-    useEffect(() => { bootstrap(); }, [bootstrap]);
 
+    useEffect(() => {
+        if (!sidebar.length && initialList.length) {
+            useChatStore.setState({ sidebar: initialList });
+        } else {
+            bootstrap().catch(console.error);
+        }
+    }, []);
 
     useEffect(() => {
         const handleResize = () => {
@@ -63,15 +44,19 @@ export default function Sidebar() {
         return () => window.removeEventListener("resize", handleResize);
     }, [setDesktop, setMobileOpen]);
 
+    const handleNew = async () => {
+        const id = await newChat();
+        goToChat(id);
+    };
+
+    const chats = sidebar.length ? sidebar : initialList;
     const sidebarWidth = isDesktop ? (isCollapsed ? "w-16" : "w-64") : "w-64";
 
     return (
         <>
             {!isDesktop && (
                 <div
-                    className={`fixed inset-0 z-40 bg-black/40 backdrop-blur-sm transition-opacity duration-300 ${isMobileOpen
-                        ? "opacity-100 pointer-events-auto"
-                        : "opacity-0 pointer-events-none"
+                    className={`fixed inset-0 z-40 bg-black/40 backdrop-blur-sm transition-opacity duration-300 ${isMobileOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
                         }`}
                     onClick={() => setMobileOpen(false)}
                 />
@@ -82,11 +67,7 @@ export default function Sidebar() {
                     "h-screen flex flex-col border-r border-[var(--color-border)] bg-[var(--color-sidebar-bg)] z-50",
                     "transition-all duration-300 ease-in-out",
                     isDesktop ? "static" : "fixed top-0 left-0 transform-gpu",
-                    isDesktop
-                        ? ""
-                        : isMobileOpen
-                            ? "translate-x-0"
-                            : "-translate-x-full",
+                    isDesktop ? "" : isMobileOpen ? "translate-x-0" : "-translate-x-full",
                     sidebarWidth,
                 ].join(" ")}
             >
@@ -97,19 +78,15 @@ export default function Sidebar() {
                     setIsMobileOpen={setMobileOpen}
                 />
 
-                <div className="flex-1 overflow-y-auto px-2 py-3 flex flex-col gap-3">
+                <div className="px-2 py-3 space-y-3 flex-shrink-0">
                     <SidebarButton
                         icon={<Plus size={18} />}
                         label="New chat"
-                        onClick={() => {
-                            const id = uuidv4();
-                            router.push(`/c/${id}`);
-                        }}
+                        onClick={handleNew}
                         collapsed={isCollapsed}
                         variant="primary"
                         shortcut={["Ctrl", "Shift", "N"]}
                     />
-
                     <SidebarButton
                         icon={<Search size={18} />}
                         label="Search"
@@ -119,7 +96,17 @@ export default function Sidebar() {
                     />
                 </div>
 
-                <SidebarBody />
+                <ul className="flex-1 overflow-y-auto px-2 py-2 space-y-2">
+                    {chats.map((chat) => (
+                        <li
+                            key={chat.id}
+                            onClick={() => goToChat(chat.id)}
+                            className="flex items-center justify-between p-2 rounded-lg hover:bg-muted cursor-pointer"
+                        >
+                            <span className="truncate">{chat.title}</span>
+                        </li>
+                    ))}
+                </ul>
 
                 <SidebarFooter isCollapsed={isCollapsed} setIsCollapsed={setCollapsed} />
             </aside>

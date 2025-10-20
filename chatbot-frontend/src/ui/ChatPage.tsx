@@ -3,8 +3,9 @@ import { useChatStore } from "@/application/store/useChatStore";
 import { ChatSession } from "@/domain/model/ChatSession";
 import { useChatNavigation } from "@/hooks/useChatNavigation";
 import { useEffect } from "react";
-import ChatInput from "./ChatInput";
 import ChatArea from "./ChatArea";
+import ChatHeader from "./ChatHeader";
+import ChatInput from "./ChatInput";
 
 interface Props {
     initialChat?: ChatSession;
@@ -30,6 +31,7 @@ export default function ChatPage({ initialChat }: Props) {
 
     return (
         <div className="flex flex-col flex-1">
+            <ChatHeader />
             <ChatArea chat={currentChat} />
             <ChatInput chatId={currentChatId} />
         </div>

@@ -1,41 +1,37 @@
 "use client";
 
 import { useChatStore } from "@/application/store/useChatStore";
-import { useChatActions } from "@/hooks/useChatActions";
+import { ChatSession } from "@/domain/model/ChatSession";
+import { useChatNavigation } from "@/hooks/useChatNavigation";
 import { Apple, BookOpen, Calculator, Sparkles } from "lucide-react";
-import { usePathname, useRouter } from "next/navigation";
-import { v4 as uuidv4 } from "uuid";
+import { useEffect, useRef } from "react";
 
 const suggestions = [
-    { icon: Apple, title: "Meal Planning", description: "Create a balanced meal plan for the week" },
-    { icon: Calculator, title: "Calorie Tracking", description: "Calculate macros for my fitness goals" },
-    { icon: BookOpen, title: "Recipe Ideas", description: "Suggest healthy recipes with chicken" },
-    { icon: Sparkles, title: "Nutrition Advice", description: "What are the benefits of omega-3?" },
+    { icon: Apple, text: "Suggest a healthy breakfast" },
+    { icon: Calculator, text: "Calculate my daily calories" },
+    { icon: BookOpen, text: "Meal plan for muscle gain" },
+    { icon: Sparkles, text: "Benefits of omega-3?" },
 ];
 
-export default function ChatArea({ chatId }: { chatId?: string }) {
-    const { chats, addMessage } = useChatStore();
-    const router = useRouter();
-    const pathname = usePathname();
-    const { sendMessage } = useChatActions();
+export default function ChatArea({ chat }: { chat?: ChatSession }) {
+    const { send, newChat } = useChatStore();
+    const { goToChat } = useChatNavigation();
+    const endRef = useRef<HTMLDivElement | null>(null);
 
-    const currentChatId =
-        chatId || (pathname.startsWith("/c/") ? pathname.split("/c/")[1] : null);
-
-    const messages = currentChatId ? chats[currentChatId] || [] : [];
+    useEffect(() => {
+        endRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, [chat?.messages?.length]);
 
     const handleSuggestionClick = async (text: string) => {
-        if (!currentChatId) {
-            const newId = uuidv4();
-            addMessage(newId, { role: "user", content: text });
-            router.replace(`/c/${newId}`);
-            setTimeout(() => sendMessage(newId, text), 100);
+        if (!chat?.id) {
+            const id = await newChat(text);
+            goToChat(id);
         } else {
-            sendMessage(currentChatId, text);
+            await send(text);
         }
     };
 
-    if (!currentChatId || messages.length === 0) {
+    if (!chat) {
         return (
             <div className="flex-1 overflow-y-auto bg-[var(--color-background)]">
                 <div className="max-w-3xl mx-auto px-4 py-12 flex flex-col items-center justify-center min-h-full">
@@ -60,20 +56,15 @@ export default function ChatArea({ chatId }: { chatId?: string }) {
                             <button
                                 key={i}
                                 className="group p-4 rounded-2xl border border-[var(--color-border)] bg-[var(--color-card)] hover:bg-[var(--color-secondary)] transition-all duration-200 text-left"
-                                onClick={() => handleSuggestionClick(s.title)}
+                                onClick={() => handleSuggestionClick(s.text)}
                             >
-                                <div className="flex items-start gap-3">
+                                <div className="flex items-center gap-3">
                                     <div className="p-2 rounded-lg bg-[var(--color-primary)] bg-opacity-10 group-hover:bg-opacity-15 transition-all">
                                         <s.icon size={20} className="text-[var(--color-foreground)]" />
                                     </div>
-                                    <div className="flex-1 min-w-0">
-                                        <h3 className="font-semibold text-[var(--color-foreground)] mb-1">
-                                            {s.title}
-                                        </h3>
-                                        <p className="text-sm text-[var(--color-foreground)] opacity-60 line-clamp-2">
-                                            {s.description}
-                                        </p>
-                                    </div>
+                                    <h3 className="text-[var(--color-foreground)] font-medium group-hover:underline flex-1">
+                                        {s.text}
+                                    </h3>
                                 </div>
                             </button>
                         ))}
@@ -86,7 +77,7 @@ export default function ChatArea({ chatId }: { chatId?: string }) {
     return (
         <div className="flex-1 overflow-y-auto bg-[var(--color-background)] px-4 py-6">
             <div className="max-w-3xl mx-auto flex flex-col gap-3">
-                {messages.map((m, i) => (
+                {chat.messages.map((m, i) => (
                     <div
                         key={i}
                         className={`message-enter p-3 rounded-xl max-w-[80%] ${m.role === "user"
