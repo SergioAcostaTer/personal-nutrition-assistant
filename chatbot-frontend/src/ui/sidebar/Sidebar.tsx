@@ -3,7 +3,7 @@ import { useChatStore } from "@/application/store/useChatStore";
 import { useChatNavigation } from "@/hooks/useChatNavigation";
 import { useSidebarStore } from "@/lib/store/sidebarStore";
 import { Plus, Search } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { SidebarButton } from "./SidebarButton";
 import { SidebarFooter } from "./SidebarFooter";
 import { SidebarHeader } from "./SidebarHeader";
@@ -33,13 +33,18 @@ export default function Sidebar({ initialList = [] }: Props) {
         }
     }, [sidebar.length, initialList, bootstrap]);
 
-    useEffect(() => {
+    const [hydrated, setHydrated] = useState(false);
+    useLayoutEffect(() => {
+        const desktop = window.innerWidth >= 768;
+        setDesktop(desktop);
+        setHydrated(true);
+        if (desktop) setMobileOpen(false);
+
         const handleResize = () => {
-            const desktop = window.innerWidth >= 768;
-            setDesktop(desktop);
-            if (desktop) setMobileOpen(false);
+            const isNowDesktop = window.innerWidth >= 768;
+            setDesktop(isNowDesktop);
+            if (isNowDesktop) setMobileOpen(false);
         };
-        handleResize();
         window.addEventListener("resize", handleResize);
         return () => window.removeEventListener("resize", handleResize);
     }, [setDesktop, setMobileOpen]);
@@ -61,6 +66,11 @@ export default function Sidebar({ initialList = [] }: Props) {
 
     const chats = sidebar.length ? sidebar : initialList;
     const sidebarWidth = isDesktop ? (isCollapsed ? "w-16" : "w-64") : "w-64";
+
+    if (!hydrated) {
+        return <aside className="w-64 h-screen bg-[var(--color-sidebar-bg)]" />;
+    }
+
 
     return (
         <>
