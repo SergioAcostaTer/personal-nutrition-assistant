@@ -13,7 +13,6 @@ const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 export async function POST(req: NextRequest) {
     const { sessionId, message } = await req.json();
 
-    // Get or create session
     const session = sessions.get(sessionId);
     if (!session) {
         return NextResponse.json({ error: "Session not found" }, { status: 404 });
@@ -28,7 +27,6 @@ export async function POST(req: NextRequest) {
     };
     session.messages.push(userMsg);
 
-    // Generate assistant reply
     const reply = generateReply(message);
     const assistantMsg: Message = {
         id: crypto.randomUUID(),
@@ -37,18 +35,18 @@ export async function POST(req: NextRequest) {
         createdAt: new Date().toISOString(),
     };
 
-    // Stream response
     const stream = new ReadableStream({
         async start(controller) {
             const tokens = reply.split(" ");
-            for (const t of tokens) {
-                controller.enqueue(encoder.encode(`data: ${t} \n\n`));
+            for (let i = 0; i < tokens.length; i++) {
+                // Add space after each token except the last one
+                const chunk = i < tokens.length - 1 ? tokens[i] + " " : tokens[i];
+                controller.enqueue(encoder.encode(`data: ${chunk}\n\n`));
                 await sleep(40);
             }
             controller.enqueue(encoder.encode("data: [DONE]\n\n"));
             controller.close();
 
-            // Save assistant message after streaming completes
             session!.messages.push(assistantMsg);
             session!.lastMessageAt = new Date().toISOString();
             sessions.set(sessionId, session!);

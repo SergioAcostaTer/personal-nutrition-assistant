@@ -1,8 +1,7 @@
-"use client";
-
 import { useChatStore } from "@/application/store/useChatStore";
 import { ChatSession } from "@/domain/model/ChatSession";
 import { useChatNavigation } from "@/hooks/useChatNavigation";
+import { useSidebarStore } from "@/lib/store/sidebarStore";
 import { Apple, BookOpen, Calculator, Sparkles } from "lucide-react";
 import { useEffect, useRef } from "react";
 
@@ -16,6 +15,7 @@ const suggestions = [
 export default function ChatArea({ chat }: { chat?: ChatSession }) {
     const { send, newChat } = useChatStore();
     const { goToChat } = useChatNavigation();
+    const { isDesktop, setMobileOpen } = useSidebarStore();
     const endRef = useRef<HTMLDivElement | null>(null);
 
     useEffect(() => {
@@ -23,6 +23,11 @@ export default function ChatArea({ chat }: { chat?: ChatSession }) {
     }, [chat?.messages?.length]);
 
     const handleSuggestionClick = async (text: string) => {
+        // Close mobile sidebar when suggestion is clicked
+        if (!isDesktop) {
+            setMobileOpen(false);
+        }
+
         if (!chat?.id) {
             const id = await newChat(text);
             goToChat(id);
@@ -81,13 +86,14 @@ export default function ChatArea({ chat }: { chat?: ChatSession }) {
                     <div
                         key={i}
                         className={`message-enter p-3 rounded-xl max-w-[80%] ${m.role === "user"
-                            ? "self-end bg-[var(--color-primary)] text-white"
-                            : "self-start bg-[var(--color-card)] text-[var(--color-foreground)]"
+                                ? "self-end bg-[var(--color-primary)] text-white"
+                                : "self-start bg-[var(--color-card)] text-[var(--color-foreground)]"
                             }`}
                     >
                         {m.content}
                     </div>
                 ))}
+                <div ref={endRef} />
             </div>
         </div>
     );

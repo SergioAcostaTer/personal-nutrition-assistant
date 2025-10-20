@@ -1,3 +1,4 @@
+"use client";
 import { useChatStore } from "@/application/store/useChatStore";
 import { ChatSession } from "@/domain/model/ChatSession";
 import { useChatNavigation } from "@/hooks/useChatNavigation";

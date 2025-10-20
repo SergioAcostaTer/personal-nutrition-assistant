@@ -1,3 +1,4 @@
+"use client";
 import { useChatStore } from "@/application/store/useChatStore";
 import { useChatNavigation } from "@/hooks/useChatNavigation";
 import { useSidebarStore } from "@/lib/store/sidebarStore";

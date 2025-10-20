@@ -1,4 +1,3 @@
-"use client";
 import { useChatStore } from "@/application/store/useChatStore";
 import { useChatNavigation } from "@/hooks/useChatNavigation";
 import { Paperclip, Send } from "lucide-react";
@@ -21,7 +20,15 @@ export default function ChatInput({ chatId }: Props) {
         const maxHeight = 200;
         el.style.height = Math.min(el.scrollHeight, maxHeight) + "px";
     }, []);
-    useEffect(adjustHeight, [message]);
+
+    useEffect(adjustHeight, [message, adjustHeight]);
+
+    // Auto-focus when chat changes
+    useEffect(() => {
+        if (chatId && textareaRef.current) {
+            textareaRef.current.focus();
+        }
+    }, [chatId]);
 
     const handleSend = async () => {
         const text = message.trim();
@@ -29,7 +36,7 @@ export default function ChatInput({ chatId }: Props) {
         setMessage("");
         if (!chatId) {
             const id = await newChat(text);
-            goToChat(id); // silent URL update, no route transition
+            goToChat(id);
         } else {
             await send(text);
         }
@@ -40,7 +47,7 @@ export default function ChatInput({ chatId }: Props) {
             e.preventDefault();
             handleSend();
         }
-    }
+    };
 
     return (
         <div className="bg-[var(--color-background)] px-4 py-4">
