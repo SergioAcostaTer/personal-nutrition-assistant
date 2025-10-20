@@ -1,19 +1,14 @@
-import ChatArea from "@/components/chat/ChatArea";
-import ChatHeader from "@/components/chat/ChatHeader";
-import ChatInput from "@/components/chat/ChatInput";
-import Sidebar from "@/components/sidebar/Sidebar";
+import { container } from "@/composition/container";
+import ChatPage from "@/ui/ChatPage";
+import { notFound } from "next/navigation";
 
-export default function ChatPage({ params }: { params: { id: string } }) {
-    const { id } = params;
+export const dynamic = "force-dynamic";
 
-    return (
-        <div className="flex h-[100svh] overflow-hidden bg-[var(--color-background)]">
-            <Sidebar />
-            <main className="flex flex-1 flex-col">
-                <ChatHeader />
-                <ChatArea chatId={id} />
-                <ChatInput chatId={id} />
-            </main>
-        </div>
-    );
+export default async function ChatSSRPage({ params }: { params: { id: string } }) {
+    try {
+        const chat = await container.openSession.execute(params.id);
+        return <ChatPage initialChat={chat} />;
+    } catch {
+        notFound();
+    }
 }

@@ -1,7 +1,7 @@
 "use client";
 
+import { useChatStore } from "@/application/store/useChatStore";
 import { useChatActions } from "@/hooks/useChatActions";
-import { useChatStore } from "@/lib/store/chatStore";
 import { Apple, BookOpen, Calculator, Sparkles } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { v4 as uuidv4 } from "uuid";
@@ -90,8 +90,8 @@ export default function ChatArea({ chatId }: { chatId?: string }) {
                     <div
                         key={i}
                         className={`message-enter p-3 rounded-xl max-w-[80%] ${m.role === "user"
-                                ? "self-end bg-[var(--color-primary)] text-white"
-                                : "self-start bg-[var(--color-card)] text-[var(--color-foreground)]"
+                            ? "self-end bg-[var(--color-primary)] text-white"
+                            : "self-start bg-[var(--color-card)] text-[var(--color-foreground)]"
                             }`}
                     >
                         {m.content}

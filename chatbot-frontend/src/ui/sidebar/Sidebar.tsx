@@ -1,5 +1,7 @@
 "use client";
 
+import { useChatStore } from "@/application/store/useChatStore";
+import { ChatSession } from "@/domain/model/ChatSession";
 import { useSidebarStore } from "@/lib/store/sidebarStore";
 import { Plus, Search } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -8,6 +10,33 @@ import { v4 as uuidv4 } from "uuid";
 import { SidebarButton } from "./SidebarButton";
 import { SidebarFooter } from "./SidebarFooter";
 import { SidebarHeader } from "./SidebarHeader";
+
+const ChatElement = ({ id, title, lastMessageAt }: Pick<ChatSession, "id" | "title" | "lastMessageAt">) => {
+    return (
+        <li className="flex items-center justify-between w-full">
+            <div className="flex-1">
+                <h4 className="font-medium">{title}</h4>
+                {lastMessageAt && <p className="text-sm text-muted-foreground">{lastMessageAt}</p>}
+            </div>
+        </li>
+    );
+};
+
+const SidebarBody = () => {
+    const { sidebar, remove } = useChatStore();
+    return (
+        <ul className="flex-1 overflow-y-auto px-2 py-3 flex flex-col gap-3">
+            {sidebar.map((item: { id: string; title: string; lastMessageAt?: string }) => (
+                <ChatElement
+                    key={item.id}
+                    id={item.id}
+                    title={item.title}
+                    lastMessageAt={item.lastMessageAt}
+                />
+            ))}
+        </ul>
+    );
+};
 
 export default function Sidebar() {
     const {
@@ -19,6 +48,9 @@ export default function Sidebar() {
         setDesktop,
     } = useSidebarStore();
     const router = useRouter();
+    const { bootstrap } = useChatStore();
+    useEffect(() => { bootstrap(); }, [bootstrap]);
+
 
     useEffect(() => {
         const handleResize = () => {
@@ -86,6 +118,8 @@ export default function Sidebar() {
                         shortcut={["Ctrl", "Shift", "F"]}
                     />
                 </div>
+
+                <SidebarBody />
 
                 <SidebarFooter isCollapsed={isCollapsed} setIsCollapsed={setCollapsed} />
             </aside>
