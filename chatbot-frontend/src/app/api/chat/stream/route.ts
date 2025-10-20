@@ -35,13 +35,12 @@ export async function POST(req: NextRequest) {
         createdAt: new Date().toISOString(),
     };
 
+
     const stream = new ReadableStream({
         async start(controller) {
             const tokens = reply.split(" ");
-            for (let i = 0; i < tokens.length; i++) {
-                // Add space after each token except the last one
-                const chunk = i < tokens.length - 1 ? tokens[i] + " " : tokens[i];
-                controller.enqueue(encoder.encode(`data: ${chunk}\n\n`));
+            for (const token of tokens) {
+                controller.enqueue(encoder.encode(`data: ${token} \n\n`));
                 await sleep(40);
             }
             controller.enqueue(encoder.encode("data: [DONE]\n\n"));
