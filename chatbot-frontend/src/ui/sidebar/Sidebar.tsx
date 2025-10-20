@@ -47,6 +47,7 @@ export default function Sidebar({ initialList = [] }: Props) {
     const handleNew = async () => {
         const id = await newChat();
         goToChat(id);
+        if (!isDesktop) setMobileOpen(false);
     };
 
     const chats = sidebar.length ? sidebar : initialList;
@@ -65,7 +66,7 @@ export default function Sidebar({ initialList = [] }: Props) {
             <aside
                 className={[
                     "h-screen flex flex-col border-r border-[var(--color-border)] bg-[var(--color-sidebar-bg)] z-50",
-                    "transition-all duration-300 ease-in-out",
+                    "transition-transform duration ease-out will-change-transform",
                     isDesktop ? "static" : "fixed top-0 left-0 transform-gpu",
                     isDesktop ? "" : isMobileOpen ? "translate-x-0" : "-translate-x-full",
                     sidebarWidth,
@@ -100,7 +101,10 @@ export default function Sidebar({ initialList = [] }: Props) {
                     {chats.map((chat) => (
                         <li
                             key={chat.id}
-                            onClick={() => goToChat(chat.id)}
+                            onClick={() => {
+                                goToChat(chat.id);
+                                if (!isDesktop) setMobileOpen(false);
+                            }}
                             className={`flex items-center justify-between p-2 rounded-lg cursor-pointer transition-colors
                                 ${activeChatId === chat.id
                                     ? "bg-[var(--color-secondary)] font-medium"
