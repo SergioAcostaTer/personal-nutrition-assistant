@@ -32,14 +32,35 @@ export const useChatStore = create<State>((set, get) => ({
     },
 
     async open(id: string) {
-        set({ loading: true });
+        const existing = get().sessions[id];
+        // If already loaded, just switch active and skip fetch
+        if (existing) {
+            set({ activeId: id });
+            return;
+        }
+
+        // Instantly set an empty session — for fast UI swap
+        const placeholder = { id, title: "Loading…", messages: [] };
+        set((s) => ({
+            sessions: { ...s.sessions, [id]: placeholder },
+            activeId: id,
+            loading: true,
+        }));
+
+        // Fetch messages asynchronously
         try {
             const chat = await container.openSession.execute(id);
-            set(s => ({ sessions: { ...s.sessions, [id]: chat }, activeId: id }));
+            set((s) => ({
+                sessions: { ...s.sessions, [id]: chat },
+                activeId: id,
+            }));
+        } catch (e) {
+            console.error("Failed to open chat:", e);
         } finally {
             set({ loading: false });
         }
     },
+
 
     async newChat(firstMessage?: string) {
         const id = crypto.randomUUID();
