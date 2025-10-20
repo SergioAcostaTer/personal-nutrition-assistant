@@ -6,13 +6,14 @@ import { useEffect, useRef } from "react";
 import ChatArea from "./ChatArea";
 import ChatHeader from "./ChatHeader";
 import ChatInput from "./ChatInput";
+import ChatLoader from "./ChatLoader";
 
 interface Props {
     initialChat?: ChatSession;
 }
 
 export default function ChatPage({ initialChat }: Props) {
-    const { sessions, activeId, open } = useChatStore();
+    const { sessions, activeId, open, loading } = useChatStore();
     const { currentId } = useChatNavigation();
     const chatIdFromUrl = currentId();
     const currentChatId = chatIdFromUrl || activeId;
@@ -40,7 +41,11 @@ export default function ChatPage({ initialChat }: Props) {
     return (
         <div className="flex flex-col flex-1">
             <ChatHeader />
-            <ChatArea chat={currentChat} />
+            {loading ? (
+                <ChatLoader />
+            ) : (
+                <ChatArea chat={currentChat} />
+            )}
             <ChatInput chatId={currentChatId} />
         </div>
     );
