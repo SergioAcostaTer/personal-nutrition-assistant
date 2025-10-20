@@ -9,8 +9,14 @@ export default async function ChatSSRPage({
 }: {
     params: Promise<{ id: string }>;
 }) {
+    const { id } = await params;
+
+    // 👇 if using mock (localStorage-based), skip SSR open
+    if (process.env.NEXT_PUBLIC_USE_MOCK === "true") {
+        return <ChatPage />;
+    }
+
     try {
-        const { id } = await params;
         const chat = await container.openSession.execute(id);
         return <ChatPage initialChat={chat} />;
     } catch {

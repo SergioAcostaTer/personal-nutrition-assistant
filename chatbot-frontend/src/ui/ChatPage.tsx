@@ -27,6 +27,7 @@ export default function ChatPage({ initialChat }: Props) {
         } else if (chatIdFromUrl && (!sessions[chatIdFromUrl] || activeId !== chatIdFromUrl)) {
             open(chatIdFromUrl).catch(console.error);
         }
+        console.log({ chatIdFromUrl, initialChat, sessions, activeId });
     }, [chatIdFromUrl, initialChat, open, sessions, activeId]);
 
     return (
