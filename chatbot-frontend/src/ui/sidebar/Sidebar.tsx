@@ -1,5 +1,3 @@
-"use client";
-
 import { useChatStore } from "@/application/store/useChatStore";
 import { useChatNavigation } from "@/hooks/useChatNavigation";
 import { useSidebarStore } from "@/lib/store/sidebarStore";
@@ -15,7 +13,8 @@ interface Props {
 
 export default function Sidebar({ initialList = [] }: Props) {
     const { sidebar, bootstrap, newChat } = useChatStore();
-    const { goToChat } = useChatNavigation();
+    const { goToChat, currentId } = useChatNavigation();
+    const activeChatId = currentId();
     const {
         isCollapsed,
         isMobileOpen,
@@ -31,8 +30,7 @@ export default function Sidebar({ initialList = [] }: Props) {
         } else if (!sidebar.length) {
             bootstrap().catch(console.error);
         }
-    }, []);
-
+    }, [sidebar.length, initialList, bootstrap]);
 
     useEffect(() => {
         const handleResize = () => {
@@ -103,14 +101,13 @@ export default function Sidebar({ initialList = [] }: Props) {
                             key={chat.id}
                             onClick={() => goToChat(chat.id)}
                             className={`flex items-center justify-between p-2 rounded-lg cursor-pointer transition-colors
-                                    ${window?.location?.pathname === `/c/${chat.id}`
+                                ${activeChatId === chat.id
                                     ? "bg-[var(--color-secondary)] font-medium"
                                     : "hover:bg-[var(--color-card)]"
                                 }`}
                         >
                             <span className="truncate">{chat.title}</span>
                         </li>
-
                     ))}
                 </ul>
 

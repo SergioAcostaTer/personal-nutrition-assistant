@@ -1,4 +1,11 @@
-import { NextRequest } from "next/server";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { NextRequest, NextResponse } from "next/server";
+
+type Message = { id: string; role: "user" | "assistant"; content: string; createdAt: string };
+type Session = { id: string; title: string; messages: Message[]; lastMessageAt?: string };
+
+const sessions = (globalThis as any).__sessions ?? new Map<string, Session>();
+(globalThis as any).__sessions = sessions;
 
 const encoder = new TextEncoder();
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
@@ -6,9 +13,33 @@ const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 export async function POST(req: NextRequest) {
     const { sessionId, message } = await req.json();
 
+    // Get or create session
+    const session = sessions.get(sessionId);
+    if (!session) {
+        return NextResponse.json({ error: "Session not found" }, { status: 404 });
+    }
+
+    // Add user message
+    const userMsg: Message = {
+        id: crypto.randomUUID(),
+        role: "user",
+        content: message,
+        createdAt: new Date().toISOString(),
+    };
+    session.messages.push(userMsg);
+
+    // Generate assistant reply
+    const reply = generateReply(message);
+    const assistantMsg: Message = {
+        id: crypto.randomUUID(),
+        role: "assistant",
+        content: reply,
+        createdAt: new Date().toISOString(),
+    };
+
+    // Stream response
     const stream = new ReadableStream({
         async start(controller) {
-            const reply = generateReply(message);
             const tokens = reply.split(" ");
             for (const t of tokens) {
                 controller.enqueue(encoder.encode(`data: ${t} \n\n`));
@@ -16,6 +47,11 @@ export async function POST(req: NextRequest) {
             }
             controller.enqueue(encoder.encode("data: [DONE]\n\n"));
             controller.close();
+
+            // Save assistant message after streaming completes
+            session!.messages.push(assistantMsg);
+            session!.lastMessageAt = new Date().toISOString();
+            sessions.set(sessionId, session!);
         },
     });
 
