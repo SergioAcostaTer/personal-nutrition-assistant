@@ -24,10 +24,10 @@ export default function ChatPage({ initialChat }: Props) {
                 sessions: { ...s.sessions, [initialChat.id]: initialChat },
                 activeId: initialChat.id,
             }));
-        } else if (chatIdFromUrl && !sessions[chatIdFromUrl]) {
+        } else if (chatIdFromUrl && (!sessions[chatIdFromUrl] || activeId !== chatIdFromUrl)) {
             open(chatIdFromUrl).catch(console.error);
         }
-    }, [chatIdFromUrl]);
+    }, [chatIdFromUrl, initialChat, open, sessions, activeId]);
 
     return (
         <div className="flex flex-col flex-1">

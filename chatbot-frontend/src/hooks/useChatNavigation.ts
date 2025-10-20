@@ -1,24 +1,29 @@
 "use client";
 
+import { usePathname, useRouter } from "next/navigation";
+import { useCallback } from "react";
+
 /**
- * A lightweight hook for seamless client-side chat URL management.
- * - Updates /c/:id without triggering a Next.js route transition.
- * - Compatible with SSR hydration (on refresh or direct URL access).
+ * Handles chat navigation using Next.js router for hydration-safe updates.
  */
 export function useChatNavigation() {
-  const goToChat = (id: string) => {
-    if (typeof window === "undefined") return;
-    const newPath = `/c/${id}`;
-    if (window.location.pathname !== newPath) {
-      window.history.replaceState(null, "", newPath);
-    }
-  };
+  const router = useRouter();
+  const pathname = usePathname();
 
-  const currentId = (): string | undefined => {
-    if (typeof window === "undefined") return undefined;
-    const path = window.location.pathname;
-    return path.startsWith("/c/") ? path.slice(3) : undefined;
-  };
+  const goToChat = useCallback(
+    (id: string) => {
+      const newPath = `/c/${id}`;
+      if (pathname !== newPath) {
+        router.replace(newPath);
+      }
+    },
+    [router, pathname]
+  );
+
+  const currentId = useCallback(() => {
+    if (!pathname) return undefined;
+    return pathname.startsWith("/c/") ? pathname.slice(3) : undefined;
+  }, [pathname]);
 
   return { goToChat, currentId };
 }

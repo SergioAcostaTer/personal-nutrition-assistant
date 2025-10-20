@@ -28,10 +28,11 @@ export default function Sidebar({ initialList = [] }: Props) {
     useEffect(() => {
         if (!sidebar.length && initialList.length) {
             useChatStore.setState({ sidebar: initialList });
-        } else {
+        } else if (!sidebar.length) {
             bootstrap().catch(console.error);
         }
     }, []);
+
 
     useEffect(() => {
         const handleResize = () => {
@@ -101,10 +102,15 @@ export default function Sidebar({ initialList = [] }: Props) {
                         <li
                             key={chat.id}
                             onClick={() => goToChat(chat.id)}
-                            className="flex items-center justify-between p-2 rounded-lg hover:bg-muted cursor-pointer"
+                            className={`flex items-center justify-between p-2 rounded-lg cursor-pointer transition-colors
+                                    ${window?.location?.pathname === `/c/${chat.id}`
+                                    ? "bg-[var(--color-secondary)] font-medium"
+                                    : "hover:bg-[var(--color-card)]"
+                                }`}
                         >
                             <span className="truncate">{chat.title}</span>
                         </li>
+
                     ))}
                 </ul>
 
