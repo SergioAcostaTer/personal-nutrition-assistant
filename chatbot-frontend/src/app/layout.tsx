@@ -8,7 +8,6 @@ import { ChatSession } from "@/domain/model/ChatSession";
 import Sidebar from "@/ui/sidebar/Sidebar";
 import { Metadata } from "next";
 import "./globals.css";
-import ViewportWrapper from "./viewport-wrapper";
 
 export const dynamic = "force-dynamic";
 
@@ -29,16 +28,14 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     return (
         <html lang="en">
             <body className="flex h-full bg-background text-foreground overflow-hidden">
-                <ViewportWrapper>
-                    <ThemeProvider>
-                        <UseCasesProvider>
-                            <Sidebar initialList={initialSidebar} />
-                            <main className="flex-1 flex flex-col h-full overflow-hidden">
-                                {children}
-                            </main>
-                        </UseCasesProvider>
-                    </ThemeProvider>
-                </ViewportWrapper>
+                <ThemeProvider>
+                    <UseCasesProvider>
+                        <Sidebar initialList={initialSidebar} />
+                        <main className="flex-1 flex flex-col h-full overflow-hidden">
+                            {children}
+                        </main>
+                    </UseCasesProvider>
+                </ThemeProvider>
             </body>
         </html>
     );

@@ -15,7 +15,10 @@ export default function ChatPage({ chatId }: Props) {
     const { chat: currentChat, isLoading } = useChatSession(chatId);
 
     return (
-        <div className="flex flex-col h-full flex-1 overflow-x-hidden overflow-y-auto">
+        <div
+            className="flex flex-col overflow-x-hidden overflow-y-hidden"
+            style={{ height: "100svh" }}
+        >
             <ChatHeader />
             {isLoading ? <ChatLoader /> : <ChatArea chat={currentChat} />}
             <ChatInput chatId={chatId} />
