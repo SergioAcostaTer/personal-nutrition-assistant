@@ -1,11 +1,7 @@
-// ============================================
-// FILE: src/ui/ChatPage.tsx (PATCHED)
-// ============================================
+// src/ui/ChatPage.tsx
 "use client";
 
-import { useChatStore } from "@/application/store/useChatStore";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useChatSession } from "@/hooks/useChatSession";
 import ChatArea from "./ChatArea";
 import ChatHeader from "./ChatHeader";
 import ChatInput from "./ChatInput";
@@ -16,19 +12,7 @@ interface Props {
 }
 
 export default function ChatPage({ chatId }: Props) {
-    const router = useRouter();
-
-    const sessions = useChatStore((state) => state.sessions);
-    const loading = useChatStore((state) => state.loading);
-
-    const currentChat = chatId ? sessions[chatId] : undefined;
-    const isLoading = chatId ? loading[chatId] : false;
-
-    useEffect(() => {
-        if (chatId && !currentChat && !isLoading) {
-            router.push("/");
-        }
-    }, [chatId, currentChat, isLoading, router]);
+    const { chat: currentChat, isLoading } = useChatSession(chatId);
 
     return (
         <div className="flex flex-col h-[100dvh] flex-1 overflow-hidden">
