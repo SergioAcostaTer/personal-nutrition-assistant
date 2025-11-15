@@ -49,7 +49,9 @@ html,
 body {
   height: 100%;
   margin: 0;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   background: var(--color-background);
   color: var(--color-foreground);
   transition: background-color 0.25s ease, color 0.25s ease;
