@@ -34,10 +34,6 @@ export default function ChatInput({ chatId }: Props) {
         adjustHeight();
     }, [message, adjustHeight]);
 
-    // Auto-focus on mount and chat change
-    useEffect(() => {
-        textareaRef.current?.focus();
-    }, [chatId]);
 
     const handleSend = () => {
         const text = message.trim();
