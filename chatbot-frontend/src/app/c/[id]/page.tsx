@@ -1,6 +1,6 @@
 "use client";
 
-import ChatPage from "@/ui/ChatPage";
+import ChatPage from "@/ui/chat/ChatPage";
 import { useParams } from "next/navigation";
 
 export default function ChatIdPage() {

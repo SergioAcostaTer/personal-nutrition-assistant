@@ -1,7 +1,7 @@
 // ============================================
 // FILE: src/app/page.tsx
 // ============================================
-import ChatPage from "@/ui/ChatPage";
+import ChatPage from "@/ui/chat/ChatPage";
 
 /**
  * Home page - always shows empty state with suggestions
