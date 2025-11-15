@@ -69,13 +69,14 @@ export default function ChatInput({ chatId }: Props) {
 
     return (
         <div
-            className="px-4 py-3 bg-[var(--color-background)]"
+            className="px-4 py-3 backdrop-blur-xl"
             style={{
                 position: "sticky",
                 bottom: 0,
                 paddingBottom: "calc(env(safe-area-inset-bottom) + 8px)",
                 paddingTop: "6px",
-                background: "var(--color-background)",
+                WebkitBackdropFilter: "blur(20px)",
+                backdropFilter: "blur(20px)",
                 zIndex: 50,
             }}
         >
