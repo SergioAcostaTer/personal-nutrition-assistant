@@ -1,3 +1,6 @@
+// ============================================
+// FILE: src/ui/ChatPage.tsx (PATCHED)
+// ============================================
 "use client";
 
 import { useChatStore } from "@/application/store/useChatStore";
@@ -15,8 +18,8 @@ interface Props {
 export default function ChatPage({ chatId }: Props) {
     const router = useRouter();
 
-    const sessions = useChatStore(state => state.sessions);
-    const loading = useChatStore(state => state.loading);
+    const sessions = useChatStore((state) => state.sessions);
+    const loading = useChatStore((state) => state.loading);
 
     const currentChat = chatId ? sessions[chatId] : undefined;
     const isLoading = chatId ? loading[chatId] : false;
@@ -28,7 +31,7 @@ export default function ChatPage({ chatId }: Props) {
     }, [chatId, currentChat, isLoading, router]);
 
     return (
-        <div className="flex flex-col max-h-screen flex-1">
+        <div className="flex flex-col h-[100dvh] flex-1 overflow-hidden">
             <ChatHeader />
             {isLoading ? <ChatLoader /> : <ChatArea chat={currentChat} />}
             <ChatInput chatId={chatId} />

@@ -1,3 +1,6 @@
+// ============================================
+// FILE: src/ui/ChatArea.tsx (PATCHED)
+// ============================================
 import { useChatStore } from "@/application/store/useChatStore";
 import { ChatSession } from "@/domain/model/ChatSession";
 import { useSidebarStore } from "@/lib/store/sidebarStore";
@@ -15,7 +18,10 @@ export default function ChatArea({ chat }: { chat?: ChatSession }) {
     useEffect(() => {
         if (!chat?.messages?.length) return;
         requestAnimationFrame(() => {
-            endRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+            endRef.current?.scrollIntoView({
+                behavior: "smooth",
+                block: "end",
+            });
         });
     }, [chat?.messages?.length]);
 
@@ -29,7 +35,10 @@ export default function ChatArea({ chat }: { chat?: ChatSession }) {
     const messages = chat.messages ?? [];
 
     return (
-        <div className="flex-1 overflow-y-auto bg-[var(--color-background)] px-4 py-6">
+        <div
+            className="flex-1 overflow-y-auto px-4 py-6"
+            style={{ WebkitOverflowScrolling: "touch" }}
+        >
             <div className="max-w-3xl mx-auto flex flex-col gap-3">
                 {messages.map((m) => (
                     <div

@@ -1,6 +1,5 @@
 // ============================================
-// FILE: src/app/layout.tsx
-// OPTIMIZED: Safe async data loading
+// FILE: src/app/layout.tsx (FINAL PATCHED)
 // ============================================
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { container } from "@/composition/container";
@@ -9,6 +8,7 @@ import { ChatSession } from "@/domain/model/ChatSession";
 import Sidebar from "@/ui/sidebar/Sidebar";
 import { Metadata } from "next";
 import "./globals.css";
+import ViewportWrapper from "./viewport-wrapper";
 
 export const dynamic = "force-dynamic";
 
@@ -18,25 +18,27 @@ export const metadata: Metadata = {
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-    let initialSidebar: Pick<ChatSession, "id" | "title" | "lastMessageAt">[] | undefined;
+    let initialSidebar: Pick<ChatSession, "id" | "title" | "lastMessageAt">[] = [];
+
     try {
         initialSidebar = await container.listSessions.execute();
     } catch (err) {
         console.warn("Failed to load initial sidebar data:", err);
-        initialSidebar = [];
     }
 
     return (
         <html lang="en">
-            <body className="flex h-screen bg-background text-foreground">
-                <ThemeProvider>
-                    <UseCasesProvider>
-                        <Sidebar initialList={initialSidebar} />
-                        <main className="flex-1 flex flex-col max-h-screen overflow-hidden">
-                            {children}
-                        </main>
-                    </UseCasesProvider>
-                </ThemeProvider>
+            <body className="flex h-[100dvh] bg-background text-foreground overflow-hidden">
+                <ViewportWrapper>
+                    <ThemeProvider>
+                        <UseCasesProvider>
+                            <Sidebar initialList={initialSidebar} />
+                            <main className="flex-1 flex flex-col h-[100dvh] overflow-hidden">
+                                {children}
+                            </main>
+                        </UseCasesProvider>
+                    </ThemeProvider>
+                </ViewportWrapper>
             </body>
         </html>
     );

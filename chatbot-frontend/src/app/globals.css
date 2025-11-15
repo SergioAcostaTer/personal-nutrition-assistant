@@ -2,6 +2,7 @@
 
 /* ---------- Color System ---------- */
 :root {
+  --app-height: 100dvh;
   --background: #fafafa;
   --foreground: #1f1f23;
   --primary: #6366f1;
@@ -47,7 +48,7 @@
 /* ---------- Base Styles ---------- */
 html,
 body {
-  height: 100%;
+  height: var(--app-height);
   margin: 0;
   overflow-x: hidden;
   overflow-y: auto;
