@@ -23,7 +23,6 @@ export default function ChatInput({ chatId }: Props) {
 
     useEffect(adjustHeight, [message, adjustHeight]);
 
-    // Auto-focus when chat changes
     useEffect(() => {
         if (chatId && textareaRef.current) {
             textareaRef.current.focus();
@@ -65,7 +64,7 @@ export default function ChatInput({ chatId }: Props) {
                         ref={textareaRef}
                         className="flex-1 resize-none bg-transparent outline-none text-[15px] leading-[1.5] placeholder:text-[var(--color-foreground)] placeholder:opacity-40 text-[var(--color-foreground)] max-h-[200px] py-[6px]"
                         value={message}
-                        placeholder="Message NutriAI..."
+                        placeholder="Message ChatBot..."
                         onChange={(e) => setMessage(e.target.value)}
                         onKeyDown={handleKeyDown}
                         rows={1}
@@ -82,7 +81,7 @@ export default function ChatInput({ chatId }: Props) {
                 </div>
 
                 <p className="mt-3 text-xs text-center text-[var(--color-foreground)] opacity-50">
-                    NutriAI can make mistakes. Consider checking important information.
+                    ChatBot can make mistakes. Consider checking important information.
                 </p>
             </div>
         </div>

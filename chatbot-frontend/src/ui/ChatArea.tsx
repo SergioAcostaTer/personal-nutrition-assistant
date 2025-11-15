@@ -2,14 +2,14 @@ import { useChatStore } from "@/application/store/useChatStore";
 import { ChatSession } from "@/domain/model/ChatSession";
 import { useChatNavigation } from "@/hooks/useChatNavigation";
 import { useSidebarStore } from "@/lib/store/sidebarStore";
-import { Apple, BookOpen, Calculator, Sparkles } from "lucide-react";
+import { Code, HelpCircle, Lightbulb, Sparkles } from "lucide-react";
 import { useEffect, useRef } from "react";
 
 const suggestions = [
-    { icon: Apple, text: "Suggest a healthy breakfast" },
-    { icon: Calculator, text: "Calculate my daily calories" },
-    { icon: BookOpen, text: "Meal plan for muscle gain" },
-    { icon: Sparkles, text: "Benefits of omega-3?" },
+    { icon: Lightbulb, text: "Explain quantum computing simply" },
+    { icon: Code, text: "Write a Python script" },
+    { icon: Sparkles, text: "Plan a trip to Japan" },
+    { icon: HelpCircle, text: "How do I learn React?" },
 ];
 
 export default function ChatArea({ chat }: { chat?: ChatSession }) {
@@ -23,7 +23,6 @@ export default function ChatArea({ chat }: { chat?: ChatSession }) {
     }, [chat?.messages?.length]);
 
     const handleSuggestionClick = async (text: string) => {
-        // Close mobile sidebar when suggestion is clicked
         if (!isDesktop) {
             setMobileOpen(false);
         }
@@ -42,10 +41,7 @@ export default function ChatArea({ chat }: { chat?: ChatSession }) {
                 <div className="max-w-3xl mx-auto px-4 py-12 flex flex-col items-center justify-center min-h-full">
                     <div className="mb-8 relative">
                         <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-accent)] flex items-center justify-center shadow">
-                            <Apple size={32} className="text-white" strokeWidth={2.5} />
-                        </div>
-                        <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-[var(--color-success)] border-2 border-[var(--color-background)] flex items-center justify-center">
-                            <Sparkles size={12} className="text-white" />
+                            <Sparkles size={32} className="text-white" strokeWidth={2.5} />
                         </div>
                     </div>
 
@@ -53,7 +49,7 @@ export default function ChatArea({ chat }: { chat?: ChatSession }) {
                         How can I help you today?
                     </h1>
                     <p className="text-[var(--color-foreground)] opacity-60 mb-12 text-center text-lg">
-                        Your personal nutrition assistant powered by AI
+                        Your intelligent AI assistant for any task
                     </p>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-2xl">

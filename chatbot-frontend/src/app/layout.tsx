@@ -8,9 +8,9 @@ import "./globals.css";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-    title: "NutriAI - Your Personal Nutrition Assistant",
+    title: "ChatBot - AI Assistant",
     description:
-        "Get personalized nutrition advice, meal planning, and dietary guidance powered by AI",
+        "Your intelligent AI assistant for questions, tasks, and creative work",
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
@@ -28,7 +28,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                     </UseCasesProvider>
                 </ThemeProvider>
             </body>
-
         </html>
     );
 }

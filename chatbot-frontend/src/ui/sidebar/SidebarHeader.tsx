@@ -1,6 +1,6 @@
 "use client";
 
-import { Apple, PanelLeftClose, X } from "lucide-react";
+import { MessageCircle, PanelLeftClose, X } from "lucide-react";
 
 type SidebarHeaderProps = {
     isCollapsed: boolean;
@@ -29,7 +29,7 @@ export const SidebarHeader = ({
             >
                 {/* Logo icon (never moves) */}
                 <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-accent)] flex-shrink-0 transition-transform duration">
-                    <Apple size={20} className="text-white" strokeWidth={2.5} />
+                    <MessageCircle size={20} className="text-white" strokeWidth={2.5} />
                 </div>
 
                 {/* Label (absolute — fades/slides smoothly) */}
@@ -42,7 +42,7 @@ export const SidebarHeader = ({
                     ].join(" ")}
                 >
                     <span className="font-semibold text-[var(--color-foreground)] whitespace-nowrap pointer-events-none">
-                        NutriAI
+                        ChatBot
                     </span>
 
                     {/* Collapse icon (desktop only) */}

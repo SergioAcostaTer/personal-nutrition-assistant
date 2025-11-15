@@ -3,6 +3,7 @@
 import { useSidebarStore } from "@/lib/store/sidebarStore";
 import { useThemeStore } from "@/lib/store/themeStore";
 import { Menu, Moon, Sun } from "lucide-react";
+import Link from "next/link";
 
 export default function ChatHeader() {
     const { isDesktop, toggleMobileOpen } = useSidebarStore();
@@ -22,14 +23,14 @@ export default function ChatHeader() {
             )}
 
             {/* Center: Model Info */}
-            <div className="flex-1 flex items-center justify-center gap-2">
+            <Link href="/" className="flex-1 flex items-center justify-center gap-2">
                 <span className="font-semibold text-[var(--color-foreground)] text-xl">
-                    NutriAI
+                    ChatBot
                 </span>
                 <span className="px-2 py-0.5 text-xs font-medium bg-[var(--color-primary)] bg-opacity-10 text-[var(--color-foreground)] rounded-full">
                     GPT-4
                 </span>
-            </div>
+            </Link>
 
             {/* Right: Theme Toggle */}
             <button
