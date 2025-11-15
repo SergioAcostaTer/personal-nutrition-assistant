@@ -1,113 +1,92 @@
-// ============================================
-// FILE: src/ui/ChatInput.tsx (PROFESSIONAL VERSION)
-// ============================================
-import { useChatStore } from "@/application/store/useChatStore";
+"use client";
+
+import { useAutoResizeTextarea } from "@/hooks/useAutoResizeTextarea";
+import { useSendMessage } from "@/hooks/useSendMessage";
 import { Paperclip, Send } from "lucide-react";
 import { useRouter } from "next/navigation";
-import {
-    useCallback,
-    useEffect,
-    useRef,
-    useState,
-    useTransition,
-} from "react";
+import { useState, useTransition } from "react";
 
 interface Props {
     chatId?: string;
 }
 
 export default function ChatInput({ chatId }: Props) {
-    const [message, setMessage] = useState("");
-    const [isSending, startTransition] = useTransition();
-    const textareaRef = useRef<HTMLTextAreaElement>(null);
-    const { createSession, sendMessage } = useChatStore();
     const router = useRouter();
+    const [text, setText] = useState("");
+    const [isPending, startTransition] = useTransition();
 
-    // Auto-resize textarea
-    const adjustHeight = useCallback(() => {
-        const el = textareaRef.current;
-        if (!el) return;
+    const { send, isSending } = useSendMessage(chatId);
+    const { bind, resize } = useAutoResizeTextarea<HTMLTextAreaElement>();
 
-        requestAnimationFrame(() => {
-            el.style.height = "auto";
-            const maxHeight = 200;
-            el.style.height = Math.min(el.scrollHeight, maxHeight) + "px";
-        });
-    }, []);
-
-    useEffect(() => {
-        adjustHeight();
-    }, [message, adjustHeight]);
+    const disabled = isPending || isSending;
 
     const handleSend = () => {
-        const text = message.trim();
-        if (!text || isSending) return;
+        const message = text.trim();
+        if (!message || disabled) return;
 
-        setMessage("");
+        setText("");
 
         startTransition(() => {
-            if (!chatId) {
-                createSession(text).then((id) => {
-                    router.push(`/c/${id}`);
-                });
-            } else {
-                sendMessage(chatId, text);
-            }
+            send(message).then((newId) => {
+                if (!chatId) router.push(`/c/${newId}`);
+            });
         });
     };
 
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    const onKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
         if (e.key === "Enter" && !e.shiftKey) {
             e.preventDefault();
             handleSend();
         }
     };
 
-    const handlePaste = () => {
-        setTimeout(adjustHeight, 0);
+    const onPaste = () => {
+        setTimeout(resize, 0);
     };
 
     return (
         <div
-            className="px-4 py-3 backdrop-blur-xl"
+            className="px-4 py-3 bg-[var(--color-background)]"
             style={{
                 position: "sticky",
                 bottom: 0,
                 paddingBottom: "calc(env(safe-area-inset-bottom) + 8px)",
                 paddingTop: "6px",
-                WebkitBackdropFilter: "blur(20px)",
-                backdropFilter: "blur(20px)",
                 zIndex: 50,
             }}
         >
             <div className="max-w-3xl mx-auto">
                 <div className="relative flex items-center gap-2 bg-[var(--color-input-bg)] border border-[var(--color-border)] rounded-3xl shadow-sm px-4 py-2.5 focus-within:border-[var(--color-primary)] focus-within:shadow-md transition-all">
                     <button
-                        className="p-2 rounded-lg hover:bg-[var(--color-secondary)] text-[var(--color-foreground)] transition-colors flex-shrink-0"
-                        aria-label="Attach file"
                         type="button"
+                        className="p-2 rounded-lg hover:bg-[var(--color-secondary)] flex-shrink-0"
+                        aria-label="Attach file"
+                        disabled={disabled}
                     >
                         <Paperclip size={20} />
                     </button>
 
                     <textarea
-                        ref={textareaRef}
-                        className="flex-1 resize-none bg-transparent outline-none text-[15px] leading-[1.5] placeholder:text-[var(--color-foreground)] placeholder:opacity-40 text-[var(--color-foreground)] max-h-[200px] py-[6px]"
-                        value={message}
+                        {...bind}
+                        className="flex-1 resize-none bg-transparent outline-none text-[15px] leading-[1.5] placeholder:opacity-40 max-h-[200px] py-[6px]"
+                        value={text}
                         placeholder="Message ChatBot..."
-                        onChange={(e) => setMessage(e.target.value)}
-                        onKeyDown={handleKeyDown}
-                        onPaste={handlePaste}
+                        onChange={(e) => {
+                            setText(e.target.value);
+                            resize();
+                        }}
+                        onKeyDown={onKeyDown}
+                        onPaste={onPaste}
                         rows={1}
-                        disabled={isSending}
+                        disabled={disabled}
                     />
 
                     <button
-                        className="flex-shrink-0 p-2.5 rounded-lg bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-hover)] transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-[var(--color-primary)]"
-                        onClick={handleSend}
-                        disabled={!message.trim() || isSending}
-                        aria-label="Send message"
                         type="button"
+                        onClick={handleSend}
+                        aria-label="Send message"
+                        disabled={!text.trim() || disabled}
+                        className="flex-shrink-0 p-2.5 rounded-lg bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-hover)] disabled:opacity-40"
                     >
                         <Send size={18} />
                     </button>
