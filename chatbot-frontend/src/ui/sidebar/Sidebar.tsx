@@ -86,7 +86,7 @@ export default function Sidebar({ initialList = [] }: Props) {
             {/* Mobile overlay */}
             {!isDesktop && (
                 <div
-                    className={`fixed inset-0 z-40 bg-black/40 backdrop-blur-sm transition-opacity duration-300 ${isMobileOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+                    className={`fixed inset-0 z-60 bg-black/40 backdrop-blur-sm transition-opacity duration-300 ${isMobileOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
                         }`}
                     onClick={() => setMobileOpen(false)}
                 />
@@ -95,7 +95,7 @@ export default function Sidebar({ initialList = [] }: Props) {
             {/* Sidebar */}
             <aside
                 className={[
-                    "h-screen flex flex-col border-r border-[var(--color-border)] bg-[var(--color-sidebar-bg)] z-50",
+                    "h-screen flex flex-col border-r border-[var(--color-border)] bg-[var(--color-sidebar-bg)] z-60",
                     "transition-transform duration ease-out will-change-transform",
                     isDesktop ? "static" : "fixed top-0 left-0 transform-gpu",
                     isDesktop ? "" : isMobileOpen ? "translate-x-0" : "-translate-x-full",
@@ -135,8 +135,8 @@ export default function Sidebar({ initialList = [] }: Props) {
                             key={chat.id}
                             onClick={() => handleChatClick(chat.id)}
                             className={`flex items-center justify-between p-2 rounded-lg cursor-pointer transition-colors ${activeChatId === chat.id
-                                    ? "bg-[var(--color-secondary)] font-medium"
-                                    : "hover:bg-[var(--color-card)]"
+                                ? "bg-[var(--color-secondary)] font-medium"
+                                : "hover:bg-[var(--color-card)]"
                                 }`}
                         >
                             <span className="truncate text-[var(--color-foreground)]">{chat.title}</span>

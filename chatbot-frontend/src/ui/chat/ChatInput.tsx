@@ -46,10 +46,10 @@ export default function ChatInput({ chatId }: Props) {
 
     return (
         <div
-            className="px-4 py-3 bg-[var(--color-background)]"
+            className="px-4 py-3"
             style={{
                 position: "fixed",
-                bottom: "env(safe-area-inset-bottom)",
+                bottom: 0,
                 left: 0,
                 right: 0,
                 zIndex: 50,

@@ -27,7 +27,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 
     return (
         <html lang="en">
-            <body className="flex h-full bg-background text-foreground overflow-hidden">
+            <body className="flex bg-background text-foreground overflow-hidden">
                 <ThemeProvider>
                     <UseCasesProvider>
                         <Sidebar initialList={initialSidebar} />
