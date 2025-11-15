@@ -83,15 +83,11 @@ export const useChatStore = create<State>((set, get) => ({
             sidebar: [{ id, title: placeholder.title, lastMessageAt: now }, ...s.sidebar],
         }));
 
-        // Persist in background
-        container.createSession.execute(id, "New Chat")
-            .then(created => {
-                set(s => ({ sessions: { ...s.sessions, [id]: created } }));
-            })
-            .catch(err => {
-                console.warn("Session creation failed:", err);
-                // Keep the optimistic session - user can still interact
-            });
+        try {
+            container.createSession.execute(id);
+        } catch (err) {
+            console.warn("Session creation failed:", err); //TODO: handle failure
+        }
 
         // Send first message if provided (non-blocking)
         if (firstMessage?.trim()) {

@@ -13,7 +13,7 @@ export class MockChatServiceAdapter implements ChatServicePort {
             await new Promise((r) => setTimeout(r, 50));
         }
 
-        yield "[DONE]";
+        yield "\n";
     }
 
     async generateTitle(_sessionId: string, userText: string): Promise<string> {

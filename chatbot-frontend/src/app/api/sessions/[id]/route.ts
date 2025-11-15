@@ -42,7 +42,6 @@ export async function POST(req: NextRequest) {
                 controller.enqueue(encoder.encode(`data: ${token} \n\n`));
                 await sleep(40);
             }
-            controller.enqueue(encoder.encode("data: [DONE]\n\n"));
             controller.close();
 
             session!.messages.push(assistantMsg);

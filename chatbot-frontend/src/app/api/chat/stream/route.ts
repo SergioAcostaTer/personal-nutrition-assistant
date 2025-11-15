@@ -38,12 +38,11 @@ export async function POST(req: NextRequest) {
 
     const stream = new ReadableStream({
         async start(controller) {
-            const tokens = reply.split(" ");
+            const tokens = reply.split(/(\s+)/);
             for (const token of tokens) {
-                controller.enqueue(encoder.encode(`data: ${token} \n\n`));
+                controller.enqueue(encoder.encode(`data: ${token}\n\n`));
                 await sleep(40);
             }
-            controller.enqueue(encoder.encode("data: [DONE]\n\n"));
             controller.close();
 
             session!.messages.push(assistantMsg);

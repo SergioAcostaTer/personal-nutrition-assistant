@@ -15,17 +15,14 @@ interface Props {
 }
 
 export default function ChatPage({ chatId }: Props) {
-    const { sessions, loading, errors } = useChatStore();
+    const { sessions, errors } = useChatStore();
 
     const currentChat = chatId ? sessions[chatId] : undefined;
-
-    // FIXED: interpret "undefined" as "loading"
-    const isLoading = chatId ? (loading[chatId] ?? true) : false;
-
     const error = chatId ? errors[chatId] : undefined;
+    const isLoading = chatId ? useChatStore.getState().loading[chatId] : false;
 
     return (
-        <div className="flex flex-col flex-1">
+        <div className="flex flex-col max-h-screen flex-1">
             <ChatHeader />
             {error ? (
                 <ErrorScreen message={error} />

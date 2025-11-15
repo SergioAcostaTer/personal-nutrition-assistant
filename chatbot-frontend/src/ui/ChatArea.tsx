@@ -23,6 +23,8 @@ export default function ChatArea({ chat }: { chat?: ChatSession }) {
     const endRef = useRef<HTMLDivElement | null>(null);
     const containerRef = useRef<HTMLDivElement | null>(null);
 
+    console.log("Rendering ChatArea for chat:", chat);
+
     // Smooth auto-scroll with performance optimization
     useEffect(() => {
         if (!chat?.messages?.length) return;
@@ -84,19 +86,18 @@ export default function ChatArea({ chat }: { chat?: ChatSession }) {
         );
     }
 
-    // Chat messages
     return (
         <div
             ref={containerRef}
-            className="flex-1 overflow-y-auto bg-[var(--color-background)] px-4 py-6 max-w-screen"
+            className="flex-1 overflow-y-auto bg-[var(--color-background)] px-4 py-6"
         >
             <div className="max-w-3xl mx-auto flex flex-col gap-3">
                 {chat.messages.map((m) => (
                     <div
                         key={m.id}
                         className={`message-enter p-3 rounded-xl max-w-[80%] ${m.role === "user"
-                                ? "self-end bg-[var(--color-primary)] text-white"
-                                : "self-start bg-[var(--color-card)] text-[var(--color-foreground)]"
+                            ? "self-end bg-[var(--color-primary)] text-white"
+                            : "self-start bg-[var(--color-card)] text-[var(--color-foreground)]"
                             }`}
                     >
                         {m.content}
