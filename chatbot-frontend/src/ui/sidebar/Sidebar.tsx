@@ -1,8 +1,8 @@
 // ============================================
 // FILE: src/ui/sidebar/Sidebar.tsx
+// OPTIMIZED: Fast loading, proper async handling
 // ============================================
 "use client";
-
 import { useChatStore } from "@/application/store/useChatStore";
 import { useSidebarStore } from "@/lib/store/sidebarStore";
 import { Plus, Search } from "lucide-react";
@@ -19,7 +19,7 @@ interface Props {
 export default function Sidebar({ initialList = [] }: Props) {
     const router = useRouter();
     const pathname = usePathname();
-    const { sidebar, bootstrap, createSession } = useChatStore();
+    const { sidebar, bootstrap } = useChatStore();
     const {
         isCollapsed,
         isMobileOpen,
@@ -29,15 +29,22 @@ export default function Sidebar({ initialList = [] }: Props) {
         setDesktop,
     } = useSidebarStore();
 
+    // Initialize sidebar data
     useEffect(() => {
         if (!sidebar.length && initialList.length) {
+            // Use SSR data immediately
             useChatStore.setState({ sidebar: initialList });
         } else if (!sidebar.length) {
-            bootstrap().catch(console.error);
+            // Load from API (non-blocking)
+            bootstrap().catch(err => {
+                console.warn("Failed to load chats:", err);
+            });
         }
     }, [sidebar.length, initialList, bootstrap]);
 
     const [hydrated, setHydrated] = useState(false);
+
+    // Detect screen size for responsive behavior
     useLayoutEffect(() => {
         const desktop = window.innerWidth >= 768;
         setDesktop(desktop);
@@ -49,12 +56,13 @@ export default function Sidebar({ initialList = [] }: Props) {
             setDesktop(isNowDesktop);
             if (isNowDesktop) setMobileOpen(false);
         };
+
         window.addEventListener("resize", handleResize);
         return () => window.removeEventListener("resize", handleResize);
     }, [setDesktop, setMobileOpen]);
 
-    const handleNewChat = async () => {
-        router.push("/"); // Navigate to home
+    const handleNewChat = () => {
+        router.push("/");
         if (!isDesktop) setMobileOpen(false);
     };
 
@@ -63,18 +71,19 @@ export default function Sidebar({ initialList = [] }: Props) {
         if (!isDesktop) setMobileOpen(false);
     };
 
+    // Use SSR data if sidebar is empty
     const chats = sidebar.length ? sidebar : initialList;
     const sidebarWidth = isDesktop ? (isCollapsed ? "w-16" : "w-64") : "w-64";
-
-    // Get active chat ID from URL
     const activeChatId = pathname?.startsWith("/c/") ? pathname.slice(3) : undefined;
 
+    // Prevent hydration mismatch
     if (!hydrated) {
         return <aside className="w-64 h-screen bg-[var(--color-sidebar-bg)]" />;
     }
 
     return (
         <>
+            {/* Mobile overlay */}
             {!isDesktop && (
                 <div
                     className={`fixed inset-0 z-40 bg-black/40 backdrop-blur-sm transition-opacity duration-300 ${isMobileOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
@@ -83,6 +92,7 @@ export default function Sidebar({ initialList = [] }: Props) {
                 />
             )}
 
+            {/* Sidebar */}
             <aside
                 className={[
                     "h-screen flex flex-col border-r border-[var(--color-border)] bg-[var(--color-sidebar-bg)] z-50",
@@ -99,6 +109,7 @@ export default function Sidebar({ initialList = [] }: Props) {
                     setIsMobileOpen={setMobileOpen}
                 />
 
+                {/* Actions */}
                 <div className="px-2 py-3 space-y-3 flex-shrink-0">
                     <SidebarButton
                         icon={<Plus size={18} />}
@@ -117,6 +128,7 @@ export default function Sidebar({ initialList = [] }: Props) {
                     />
                 </div>
 
+                {/* Chat list */}
                 <ul className="flex-1 overflow-y-auto px-2 py-2 space-y-2">
                     {chats.map((chat) => (
                         <li
@@ -127,7 +139,7 @@ export default function Sidebar({ initialList = [] }: Props) {
                                     : "hover:bg-[var(--color-card)]"
                                 }`}
                         >
-                            <span className="truncate">{chat.title}</span>
+                            <span className="truncate text-[var(--color-foreground)]">{chat.title}</span>
                         </li>
                     ))}
                 </ul>

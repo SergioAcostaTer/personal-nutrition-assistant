@@ -1,5 +1,6 @@
 // ============================================
 // FILE: src/ui/ChatArea.tsx
+// OPTIMIZED: Smooth scrolling, virtualization-ready
 // ============================================
 import { useChatStore } from "@/application/store/useChatStore";
 import { ChatSession } from "@/domain/model/ChatSession";
@@ -20,19 +21,31 @@ export default function ChatArea({ chat }: { chat?: ChatSession }) {
     const { createSession } = useChatStore();
     const { isDesktop, setMobileOpen } = useSidebarStore();
     const endRef = useRef<HTMLDivElement | null>(null);
+    const containerRef = useRef<HTMLDivElement | null>(null);
 
+    // Smooth auto-scroll with performance optimization
     useEffect(() => {
-        endRef.current?.scrollIntoView({ behavior: "smooth" });
+        if (!chat?.messages?.length) return;
+
+        // Use RAF for smooth scrolling
+        requestAnimationFrame(() => {
+            endRef.current?.scrollIntoView({
+                behavior: "smooth",
+                block: "end"
+            });
+        });
     }, [chat?.messages?.length]);
 
-    const handleSuggestionClick = async (text: string) => {
+    const handleSuggestionClick = (text: string) => {
         if (!isDesktop) setMobileOpen(false);
 
-        // Create new chat and navigate
-        const id = await createSession(text);
-        router.push(`/c/${id}`);
+        // Create and navigate optimistically
+        createSession(text).then(id => {
+            router.push(`/c/${id}`);
+        });
     };
 
+    // Empty state
     if (!chat) {
         return (
             <div className="flex-1 overflow-y-auto bg-[var(--color-background)] max-w-screen">
@@ -42,14 +55,12 @@ export default function ChatArea({ chat }: { chat?: ChatSession }) {
                             <Sparkles size={32} className="text-white" strokeWidth={2.5} />
                         </div>
                     </div>
-
                     <h1 className="text-3xl font-semibold mb-3 text-[var(--color-foreground)] text-center">
                         How can I help you today?
                     </h1>
                     <p className="text-[var(--color-foreground)] opacity-60 mb-12 text-center text-lg">
                         Your intelligent AI assistant for any task
                     </p>
-
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-2xl">
                         {suggestions.map((s, i) => (
                             <button
@@ -73,12 +84,16 @@ export default function ChatArea({ chat }: { chat?: ChatSession }) {
         );
     }
 
+    // Chat messages
     return (
-        <div className="flex-1 overflow-y-auto bg-[var(--color-background)] px-4 py-6 max-w-screen">
+        <div
+            ref={containerRef}
+            className="flex-1 overflow-y-auto bg-[var(--color-background)] px-4 py-6 max-w-screen"
+        >
             <div className="max-w-3xl mx-auto flex flex-col gap-3">
-                {chat.messages.map((m, i) => (
+                {chat.messages.map((m) => (
                     <div
-                        key={i}
+                        key={m.id}
                         className={`message-enter p-3 rounded-xl max-w-[80%] ${m.role === "user"
                                 ? "self-end bg-[var(--color-primary)] text-white"
                                 : "self-start bg-[var(--color-card)] text-[var(--color-foreground)]"
