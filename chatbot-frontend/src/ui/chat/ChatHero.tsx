@@ -37,7 +37,10 @@ const ChatHeroCard = ({
 
 export default function ChatHero({ handleSuggestionClick }: { handleSuggestionClick: (text: string) => void }) {
     return (
-        <div className="flex-1 overflow-y-auto bg-[var(--color-background)]">
+        <div
+            className="overflow-y-auto bg-[var(--color-background)]"
+            style={{ flex: "1 1 auto", minHeight: 0 }}
+        >
             <div className="mx-auto px-3 py-6 sm:py-12 flex flex-col items-center justify-center w-full max-w-sm sm:max-w-3xl">
 
                 <div className="mb-4 sm:mb-8">

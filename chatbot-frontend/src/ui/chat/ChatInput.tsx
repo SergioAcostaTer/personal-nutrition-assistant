@@ -46,17 +46,26 @@ export default function ChatInput({ chatId }: Props) {
 
     return (
         <div
-            className="px-4 py-3"
+            className="px-4 py-4"
             style={{
                 position: "fixed",
-                bottom: 0,
+                bottom: "env(safe-area-inset-bottom)",
                 left: 0,
                 right: 0,
                 zIndex: 50,
+                background: `
+                    linear-gradient(
+                        to top,
+                        rgba(0, 0, 0, 0.55) 0%,
+                        rgba(0, 0, 0, 0.35) 50%,
+                        rgba(0, 0, 0, 0.1) 75%,
+                        rgba(0, 0, 0, 0) 100%
+                    )
+                `,
             }}
         >
             <div className="max-w-3xl mx-auto">
-                <div className="relative flex items-center gap-2 bg-[var(--color-input-bg)] border border-[var(--color-border)] rounded-3xl shadow-sm px-4 py-2.5 focus-within:border-[var(--color-primary)] focus-within:shadow-md transition-all">
+                <div className="relative flex items-center gap-2 bg-[var(--color-input-bg)] border border-[var(--color-border)] rounded-3xl shadow-lg px-4 py-2.5 focus-within:border-[var(--color-primary)] focus-within:shadow-xl transition-all">
                     <button
                         type="button"
                         className="p-2 rounded-lg hover:bg-[var(--color-secondary)] flex-shrink-0"
