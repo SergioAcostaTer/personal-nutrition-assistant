@@ -36,9 +36,6 @@ export default function ChatArea({ chat }: { chat?: ChatSession }) {
     return (
         <div
             className="flex-1 overflow-y-auto px-4 py-6"
-            style={{
-                height: "calc(100svh - 56px - 72px)",
-            }}
         >
             <div className="max-w-3xl mx-auto flex flex-col gap-3">
                 {messages.map((m) => (
