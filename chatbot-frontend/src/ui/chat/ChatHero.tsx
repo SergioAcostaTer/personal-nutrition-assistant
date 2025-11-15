@@ -38,7 +38,7 @@ const ChatHeroCard = ({
 export default function ChatHero({ handleSuggestionClick }: { handleSuggestionClick: (text: string) => void }) {
     return (
         <div className="flex-1 overflow-y-auto bg-[var(--color-background)]">
-            <div className="mx-auto px-3 py-6 sm:py-12 flex flex-col items-center justify-center min-h-full w-full max-w-sm sm:max-w-3xl">
+            <div className="mx-auto px-3 py-6 sm:py-12 flex flex-col items-center justify-center w-full max-w-sm sm:max-w-3xl">
 
                 <div className="mb-4 sm:mb-8">
                     <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-xl bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-accent)] flex items-center justify-center shadow">

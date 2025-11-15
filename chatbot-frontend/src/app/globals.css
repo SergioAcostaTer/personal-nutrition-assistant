@@ -49,10 +49,11 @@
 html,
 body {
   height: var(--app-height);
+  min-height: var(--app-height);
+  overscroll-behavior-y: none;
   margin: 0;
   overflow-x: hidden;
   overflow-y: auto;
-  overscroll-behavior-y: contain;
   -webkit-overflow-scrolling: touch;
   background: var(--color-background);
   color: var(--color-foreground);
