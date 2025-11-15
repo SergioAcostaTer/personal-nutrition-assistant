@@ -16,7 +16,7 @@ export default function ChatPage({ chatId }: Props) {
 
     return (
         <div
-            className="flex flex-col overflow-x-hidden overflow-y-hidden"
+            className="flex flex-col overflow-x-hidden overflow-y-auto"
             style={{ height: "100svh" }}
         >
             <ChatHeader />
