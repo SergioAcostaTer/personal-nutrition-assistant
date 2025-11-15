@@ -1,98 +1,37 @@
-// ============================================
-// FILE: src/ui/ChatArea.tsx
-// OPTIMIZED: Smooth scrolling, virtualization-ready
-// ============================================
 import { useChatStore } from "@/application/store/useChatStore";
 import { ChatSession } from "@/domain/model/ChatSession";
 import { useSidebarStore } from "@/lib/store/sidebarStore";
-import { Code, HelpCircle, Lightbulb, Sparkles } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
-
-const suggestions = [
-    { icon: Lightbulb, text: "Explain quantum computing simply" },
-    { icon: Code, text: "Write a Python script" },
-    { icon: Sparkles, text: "Plan a trip to Japan" },
-    { icon: HelpCircle, text: "How do I learn React?" },
-];
+import ChatHero from "./ChatHero";
 
 export default function ChatArea({ chat }: { chat?: ChatSession }) {
     const router = useRouter();
     const { createSession } = useChatStore();
     const { isDesktop, setMobileOpen } = useSidebarStore();
+
     const endRef = useRef<HTMLDivElement | null>(null);
-    const containerRef = useRef<HTMLDivElement | null>(null);
 
-    console.log("Rendering ChatArea for chat:", chat);
-
-    // Smooth auto-scroll with performance optimization
     useEffect(() => {
         if (!chat?.messages?.length) return;
-
-        // Use RAF for smooth scrolling
         requestAnimationFrame(() => {
-            endRef.current?.scrollIntoView({
-                behavior: "smooth",
-                block: "end"
-            });
+            endRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
         });
     }, [chat?.messages?.length]);
 
     const handleSuggestionClick = (text: string) => {
         if (!isDesktop) setMobileOpen(false);
-
-        // Create and navigate optimistically
-        createSession(text).then(id => {
-            router.push(`/c/${id}`);
-        });
+        createSession(text).then((id) => router.push(`/c/${id}`));
     };
 
-    // Empty state
-    if (!chat) {
-        return (
-            <div className="flex-1 overflow-y-auto bg-[var(--color-background)] max-w-screen">
-                <div className="max-w-3xl mx-auto px-4 py-12 flex flex-col items-center justify-center min-h-full">
-                    <div className="mb-8 relative">
-                        <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-accent)] flex items-center justify-center shadow">
-                            <Sparkles size={32} className="text-white" strokeWidth={2.5} />
-                        </div>
-                    </div>
-                    <h1 className="text-3xl font-semibold mb-3 text-[var(--color-foreground)] text-center">
-                        How can I help you today?
-                    </h1>
-                    <p className="text-[var(--color-foreground)] opacity-60 mb-12 text-center text-lg">
-                        Your intelligent AI assistant for any task
-                    </p>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-2xl">
-                        {suggestions.map((s, i) => (
-                            <button
-                                key={i}
-                                className="group p-4 rounded-2xl border border-[var(--color-border)] bg-[var(--color-card)] hover:bg-[var(--color-secondary)] transition-all duration-200 text-left"
-                                onClick={() => handleSuggestionClick(s.text)}
-                            >
-                                <div className="flex items-center gap-3">
-                                    <div className="p-2 rounded-lg bg-[var(--color-primary)] bg-opacity-10 group-hover:bg-opacity-15 transition-all">
-                                        <s.icon size={20} className="text-[var(--color-foreground)]" />
-                                    </div>
-                                    <h3 className="text-[var(--color-foreground)] font-medium group-hover:underline flex-1">
-                                        {s.text}
-                                    </h3>
-                                </div>
-                            </button>
-                        ))}
-                    </div>
-                </div>
-            </div>
-        );
-    }
+    if (!chat) return <ChatHero handleSuggestionClick={handleSuggestionClick} />;
+
+    const messages = chat.messages ?? [];
 
     return (
-        <div
-            ref={containerRef}
-            className="flex-1 overflow-y-auto bg-[var(--color-background)] px-4 py-6"
-        >
+        <div className="flex-1 overflow-y-auto bg-[var(--color-background)] px-4 py-6">
             <div className="max-w-3xl mx-auto flex flex-col gap-3">
-                {chat.messages.map((m) => (
+                {messages.map((m) => (
                     <div
                         key={m.id}
                         className={`message-enter p-3 rounded-xl max-w-[80%] ${m.role === "user"
