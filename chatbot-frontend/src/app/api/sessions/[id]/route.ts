@@ -60,6 +60,46 @@ export async function POST(req: NextRequest) {
     });
 }
 
+export async function GET(
+    _request: NextRequest,
+    context: { params: Promise<{ id: string }> }
+) {
+    const { id } = await context.params;
+    const session = sessions.get(id);
+    if (!session) {
+        return NextResponse.json({ error: "Not found" }, { status: 404 });
+    }
+    return NextResponse.json(session);
+}
+
+export async function PATCH(
+    request: NextRequest,
+    context: { params: Promise<{ id: string }> }
+) {
+    const { id } = await context.params;
+    const { title } = await request.json();
+
+    const session = sessions.get(id);
+    if (!session) {
+        return NextResponse.json({ error: "Not found" }, { status: 404 });
+    }
+
+    session.title = title;
+    session.lastMessageAt = new Date().toISOString();
+    sessions.set(id, session);
+
+    return NextResponse.json({ ok: true });
+}
+
+export async function DELETE(
+    _request: NextRequest,
+    context: { params: Promise<{ id: string }> }
+) {
+    const { id } = await context.params;
+    sessions.delete(id);
+    return NextResponse.json({ ok: true });
+}
+
 function generateReply(text: string): string {
     const lower = text.toLowerCase();
 

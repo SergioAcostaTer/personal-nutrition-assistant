@@ -1,8 +1,12 @@
+// ============================================
+// FILE: src/ui/sidebar/Sidebar.tsx
+// ============================================
 "use client";
+
 import { useChatStore } from "@/application/store/useChatStore";
-import { useChatNavigation } from "@/hooks/useChatNavigation";
 import { useSidebarStore } from "@/lib/store/sidebarStore";
 import { Plus, Search } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useLayoutEffect, useState } from "react";
 import { SidebarButton } from "./SidebarButton";
 import { SidebarFooter } from "./SidebarFooter";
@@ -13,9 +17,9 @@ interface Props {
 }
 
 export default function Sidebar({ initialList = [] }: Props) {
-    const { sidebar, bootstrap, newChat, open } = useChatStore();
-    const { goToChat, currentId } = useChatNavigation();
-    const activeChatId = currentId();
+    const router = useRouter();
+    const pathname = usePathname();
+    const { sidebar, bootstrap, createSession } = useChatStore();
     const {
         isCollapsed,
         isMobileOpen,
@@ -49,28 +53,25 @@ export default function Sidebar({ initialList = [] }: Props) {
         return () => window.removeEventListener("resize", handleResize);
     }, [setDesktop, setMobileOpen]);
 
-    const handleNew = async () => {
-        const id = await newChat();
-        goToChat(id); // Navigate instantly
+    const handleNewChat = async () => {
+        router.push("/"); // Navigate to home
         if (!isDesktop) setMobileOpen(false);
     };
 
     const handleChatClick = (chatId: string) => {
-        // Navigate instantly
-        goToChat(chatId);
-        // Trigger background load
-        open(chatId);
-        // Close mobile sidebar
+        router.push(`/c/${chatId}`);
         if (!isDesktop) setMobileOpen(false);
     };
 
     const chats = sidebar.length ? sidebar : initialList;
     const sidebarWidth = isDesktop ? (isCollapsed ? "w-16" : "w-64") : "w-64";
 
+    // Get active chat ID from URL
+    const activeChatId = pathname?.startsWith("/c/") ? pathname.slice(3) : undefined;
+
     if (!hydrated) {
         return <aside className="w-64 h-screen bg-[var(--color-sidebar-bg)]" />;
     }
-
 
     return (
         <>
@@ -102,7 +103,7 @@ export default function Sidebar({ initialList = [] }: Props) {
                     <SidebarButton
                         icon={<Plus size={18} />}
                         label="New chat"
-                        onClick={handleNew}
+                        onClick={handleNewChat}
                         collapsed={isCollapsed}
                         variant="primary"
                         shortcut={["Ctrl", "Shift", "N"]}
@@ -121,8 +122,7 @@ export default function Sidebar({ initialList = [] }: Props) {
                         <li
                             key={chat.id}
                             onClick={() => handleChatClick(chat.id)}
-                            className={`flex items-center justify-between p-2 rounded-lg cursor-pointer transition-colors
-                                ${activeChatId === chat.id
+                            className={`flex items-center justify-between p-2 rounded-lg cursor-pointer transition-colors ${activeChatId === chat.id
                                     ? "bg-[var(--color-secondary)] font-medium"
                                     : "hover:bg-[var(--color-card)]"
                                 }`}

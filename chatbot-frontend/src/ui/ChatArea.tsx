@@ -1,8 +1,11 @@
+// ============================================
+// FILE: src/ui/ChatArea.tsx
+// ============================================
 import { useChatStore } from "@/application/store/useChatStore";
 import { ChatSession } from "@/domain/model/ChatSession";
-import { useChatNavigation } from "@/hooks/useChatNavigation";
 import { useSidebarStore } from "@/lib/store/sidebarStore";
 import { Code, HelpCircle, Lightbulb, Sparkles } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
 
 const suggestions = [
@@ -13,8 +16,8 @@ const suggestions = [
 ];
 
 export default function ChatArea({ chat }: { chat?: ChatSession }) {
-    const { send, newChat } = useChatStore();
-    const { goToChat } = useChatNavigation();
+    const router = useRouter();
+    const { createSession } = useChatStore();
     const { isDesktop, setMobileOpen } = useSidebarStore();
     const endRef = useRef<HTMLDivElement | null>(null);
 
@@ -23,16 +26,11 @@ export default function ChatArea({ chat }: { chat?: ChatSession }) {
     }, [chat?.messages?.length]);
 
     const handleSuggestionClick = async (text: string) => {
-        if (!isDesktop) {
-            setMobileOpen(false);
-        }
+        if (!isDesktop) setMobileOpen(false);
 
-        if (!chat?.id) {
-            const id = await newChat(text);
-            goToChat(id);
-        } else {
-            await send(text);
-        }
+        // Create new chat and navigate
+        const id = await createSession(text);
+        router.push(`/c/${id}`);
     };
 
     if (!chat) {
@@ -82,8 +80,8 @@ export default function ChatArea({ chat }: { chat?: ChatSession }) {
                     <div
                         key={i}
                         className={`message-enter p-3 rounded-xl max-w-[80%] ${m.role === "user"
-                            ? "self-end bg-[var(--color-primary)] text-white"
-                            : "self-start bg-[var(--color-card)] text-[var(--color-foreground)]"
+                                ? "self-end bg-[var(--color-primary)] text-white"
+                                : "self-start bg-[var(--color-card)] text-[var(--color-foreground)]"
                             }`}
                     >
                         {m.content}

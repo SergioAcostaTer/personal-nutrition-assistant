@@ -1,8 +1,11 @@
+// ============================================
+// FILE: src/app/page.tsx
+// ============================================
 import ChatPage from "@/ui/ChatPage";
 
 /**
- * "/" behaves the same as any chat — it will client-side create one if missing.
- * No redirect, no route transition.
+ * Home page - always shows empty state with suggestions
+ * No chat is created until user sends a message
  */
 export default function HomePage() {
     return <ChatPage />;

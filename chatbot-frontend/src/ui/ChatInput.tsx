@@ -1,6 +1,9 @@
+// ============================================
+// FILE: src/ui/ChatInput.tsx
+// ============================================
 import { useChatStore } from "@/application/store/useChatStore";
-import { useChatNavigation } from "@/hooks/useChatNavigation";
 import { Paperclip, Send } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 interface Props {
@@ -10,8 +13,8 @@ interface Props {
 export default function ChatInput({ chatId }: Props) {
     const [message, setMessage] = useState("");
     const textareaRef = useRef<HTMLTextAreaElement | null>(null);
-    const { send, newChat } = useChatStore();
-    const { goToChat } = useChatNavigation();
+    const { createSession, sendMessage } = useChatStore();
+    const router = useRouter();
 
     const adjustHeight = useCallback(() => {
         const el = textareaRef.current;
@@ -24,7 +27,7 @@ export default function ChatInput({ chatId }: Props) {
     useEffect(adjustHeight, [message, adjustHeight]);
 
     useEffect(() => {
-        if (chatId && textareaRef.current) {
+        if (textareaRef.current) {
             textareaRef.current.focus();
         }
     }, [chatId]);
@@ -32,12 +35,16 @@ export default function ChatInput({ chatId }: Props) {
     const handleSend = async () => {
         const text = message.trim();
         if (!text) return;
+
         setMessage("");
+
         if (!chatId) {
-            const id = await newChat(text);
-            goToChat(id);
+            // Create new chat and navigate
+            const id = await createSession(text);
+            router.push(`/c/${id}`);
         } else {
-            await send(text);
+            // Send to existing chat
+            await sendMessage(chatId, text);
         }
     };
 

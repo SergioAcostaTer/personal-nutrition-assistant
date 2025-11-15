@@ -1,3 +1,6 @@
+// ============================================
+// FILE: src/app/c/[id]/page.tsx
+// ============================================
 "use client";
 
 import { useChatStore } from "@/application/store/useChatStore";
@@ -6,23 +9,18 @@ import { useParams } from "next/navigation";
 import { useEffect } from "react";
 
 /**
- * Client-only chat page — loads instantly, hydrates messages in background.
- * Perfect for fast navigation UX.
+ * Individual chat page - loads chat data based on URL
  */
-export default function ChatClientPage() {
+export default function ChatIdPage() {
     const params = useParams();
     const id = params?.id as string | undefined;
-    const { sessions, open, activeId } = useChatStore();
+    const { loadSession } = useChatStore();
 
     useEffect(() => {
-        if (!id) return;
-        // only open if not already loaded
-        if (!sessions[id]) {
-            open(id).catch(console.error);
-        } else if (activeId !== id) {
-            useChatStore.setState({ activeId: id });
+        if (id) {
+            loadSession(id);
         }
-    }, [id, open, sessions, activeId]);
+    }, [id, loadSession]);
 
-    return <ChatPage />;
+    return <ChatPage chatId={id} />;
 }
