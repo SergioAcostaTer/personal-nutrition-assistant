@@ -27,11 +27,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 
     return (
         <html lang="en">
-            <body className="flex bg-background text-foreground overflow-hidden">
+            <body className="flex bg-background text-foreground">
                 <ThemeProvider>
                     <UseCasesProvider>
                         <Sidebar initialList={initialSidebar} />
-                        <main className="flex-1 flex flex-col h-full overflow-hidden">
+                        <main className="flex-1 flex flex-col overflow-hidden" style={{ minHeight: "100svh" }}>
                             {children}
                         </main>
                     </UseCasesProvider>
