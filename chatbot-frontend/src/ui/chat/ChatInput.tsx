@@ -4,7 +4,7 @@ import { useAutoResizeTextarea } from "@/hooks/useAutoResizeTextarea";
 import { useSendMessage } from "@/hooks/useSendMessage";
 import { Paperclip, Send } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 
 interface Props {
     chatId?: string;
@@ -14,11 +14,32 @@ export default function ChatInput({ chatId }: Props) {
     const router = useRouter();
     const [text, setText] = useState("");
     const [isPending, startTransition] = useTransition();
+    const containerRef = useRef<HTMLDivElement>(null);
 
     const { send, isSending } = useSendMessage(chatId);
     const { bind, resize } = useAutoResizeTextarea<HTMLTextAreaElement>();
 
     const disabled = isPending || isSending;
+
+    // Ajustar posición del input cuando aparece el teclado
+    useEffect(() => {
+        const handleResize = () => {
+            if (!containerRef.current) return;
+
+            const vvh = window.visualViewport?.height || window.innerHeight;
+            const offset = window.innerHeight - vvh;
+
+            containerRef.current.style.transform = `translateY(-${offset}px)`;
+        };
+
+        window.visualViewport?.addEventListener('resize', handleResize);
+        window.visualViewport?.addEventListener('scroll', handleResize);
+
+        return () => {
+            window.visualViewport?.removeEventListener('resize', handleResize);
+            window.visualViewport?.removeEventListener('scroll', handleResize);
+        };
+    }, []);
 
     const handleSend = () => {
         const message = text.trim();
@@ -44,15 +65,28 @@ export default function ChatInput({ chatId }: Props) {
         setTimeout(resize, 0);
     };
 
+    const handleFocus = () => {
+        // Scroll automático al input cuando se enfoca
+        setTimeout(() => {
+            containerRef.current?.scrollIntoView({
+                behavior: 'smooth',
+                block: 'nearest',
+                inline: 'nearest'
+            });
+        }, 300);
+    };
+
     return (
         <div
-            className="px-4 py-4"
+            ref={containerRef}
+            className="px-4 py-4 transition-transform duration-200 ease-out"
             style={{
                 position: "fixed",
-                bottom: "env(safe-area-inset-bottom)",
+                bottom: 0,
                 left: 0,
                 right: 0,
                 zIndex: 50,
+                paddingBottom: `calc(16px + env(safe-area-inset-bottom))`,
                 background: `
                     linear-gradient(
                         to top,
@@ -86,6 +120,7 @@ export default function ChatInput({ chatId }: Props) {
                         }}
                         onKeyDown={onKeyDown}
                         onPaste={onPaste}
+                        onFocus={handleFocus}
                         rows={1}
                         disabled={disabled}
                     />
