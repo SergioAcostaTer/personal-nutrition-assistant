@@ -34,7 +34,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                 <ThemeProvider>
                     <UseCasesProvider>
                         <Sidebar initialList={initialSidebar} />
-                        <main className="flex-1 flex flex-col overflow-hidden" style={{ minHeight: "100svh" }}>
+                        <main className="flex flex-col flex-1 h-[100svh] max-h-[100svh] overflow-hidden">
                             {children}
                         </main>
                     </UseCasesProvider>

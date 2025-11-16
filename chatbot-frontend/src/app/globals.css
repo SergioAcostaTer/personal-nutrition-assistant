@@ -47,13 +47,11 @@
 /* ---------- Base Styles ---------- */
 html,
 body {
-  height: 100%;
   margin: 0;
-
+  padding: 0;
+  height: 100%;
   overflow: hidden;
   overscroll-behavior-y: none;
-  -webkit-overflow-scrolling: touch;
-
   -webkit-overflow-scrolling: touch;
 
   background: var(--color-background);
