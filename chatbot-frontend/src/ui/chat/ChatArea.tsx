@@ -34,9 +34,7 @@ export default function ChatArea({ chat }: { chat?: ChatSession }) {
     const messages = chat.messages ?? [];
 
     return (
-        <div
-            className="flex-1 overflow-y-auto px-4 py-6"
-        >
+        <div className="flex-1 min-h-0 overflow-y-auto px-4 py-6">
             <div className="max-w-3xl mx-auto flex flex-col gap-3">
                 {messages.map((m) => (
                     <div

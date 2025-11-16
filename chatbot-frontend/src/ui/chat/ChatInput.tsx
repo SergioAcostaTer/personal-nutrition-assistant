@@ -46,13 +46,14 @@ export default function ChatInput({ chatId }: Props) {
 
     return (
         <div
-            className="px-4 py-4"
+            className="px-4 py-3 border-t border-[var(--color-border)]"
             style={{
-                position: "fixed",
-                bottom: "env(safe-area-inset-bottom)",
+                position: "sticky",
+                bottom: 0,
                 left: 0,
                 right: 0,
                 zIndex: 50,
+                paddingBottom: "calc(env(safe-area-inset-bottom) + 0.5rem)",
                 background: `
                     linear-gradient(
                         to top,
