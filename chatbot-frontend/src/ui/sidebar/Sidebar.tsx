@@ -78,7 +78,7 @@ export default function Sidebar({ initialList = [] }: Props) {
 
     // Prevent hydration mismatch
     if (!hydrated) {
-        return <aside className="w-64 min-h-[100svh] bg-[var(--color-sidebar-bg)]" />;
+        return <aside className="w-64 bg-[var(--color-sidebar-bg)]" />;
     }
 
     return (
@@ -95,7 +95,7 @@ export default function Sidebar({ initialList = [] }: Props) {
             {/* Sidebar */}
             <aside
                 className={[
-                    "min-h-[100svh] flex flex-col border-r border-[var(--color-border)] bg-[var(--color-sidebar-bg)] z-60",
+                    "flex flex-col border-r border-[var(--color-border)] bg-[var(--color-sidebar-bg)] z-60",
                     "transition-transform duration ease-out will-change-transform",
                     isDesktop ? "static" : "fixed top-0 left-0 transform-gpu",
                     isDesktop ? "" : isMobileOpen ? "translate-x-0" : "-translate-x-full",
