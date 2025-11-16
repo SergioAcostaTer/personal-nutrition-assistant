@@ -51,7 +51,7 @@ export default function ChatInput({ chatId }: Props) {
                 position: "sticky",
                 bottom: 0,
                 zIndex: 50,
-                paddingBottom: "calc(env(safe-area-inset-bottom) + 0.5rem)",
+                paddingBottom: "calc(env(safe-area-inset-bottom) + 8px)",
                 background: `
                     linear-gradient(
                         to top,
